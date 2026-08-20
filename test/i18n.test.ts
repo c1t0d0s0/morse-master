@@ -47,6 +47,13 @@ describe('i18n Language Detection & Translation Tests', () => {
 
     mockNavigatorLanguages(['en-GB']);
     expect(detectBrowserLanguage()).toBe('en');
+
+    // 英語が優先で日本語が後順位に含まれている場合も正しく英語を検出すること
+    mockNavigatorLanguages(['en-US', 'en', 'ja']);
+    expect(detectBrowserLanguage()).toBe('en');
+
+    mockNavigatorLanguages(['en-GB', 'ja-JP']);
+    expect(detectBrowserLanguage()).toBe('en');
   });
 
   it('should fallback to English for other international languages (zh, es, fr, de, ko, etc.)', () => {

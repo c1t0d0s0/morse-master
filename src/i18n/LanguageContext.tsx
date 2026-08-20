@@ -13,13 +13,12 @@ interface LanguageContextType {
 const STORAGE_KEY = 'morse_master_language_mode';
 
 /**
- * 日本語版のWebブラウザでアクセスしたときは日本語('ja')、
- * それ以外の言語のときは英語('en')を判定して返す
+ * ユーザーのブラウザ言語設定（優先順位順）に基づいて適切な表示言語（'ja' または 'en'）を判定して返す
  */
 export function detectBrowserLanguage(): Language {
   const nav = typeof navigator !== 'undefined' ? navigator : (typeof window !== 'undefined' ? window.navigator : undefined);
   if (!nav) {
-    return 'ja';
+    return 'en';
   }
 
   const browserLanguages = (nav.languages && nav.languages.length > 0)
@@ -27,16 +26,22 @@ export function detectBrowserLanguage(): Language {
     : (nav.language ? [nav.language] : []);
 
   if (browserLanguages.length === 0) {
-    return 'ja';
+    return 'en';
   }
 
-  for (const lang of browserLanguages) {
-    if (lang && typeof lang === 'string' && lang.toLowerCase().startsWith('ja')) {
+  // 優先言語リストを先頭（優先度が高い順）から走査
+  for (const rawLang of browserLanguages) {
+    if (!rawLang || typeof rawLang !== 'string') continue;
+    const lang = rawLang.toLowerCase();
+    if (lang.startsWith('ja')) {
       return 'ja';
+    }
+    if (lang.startsWith('en')) {
+      return 'en';
     }
   }
 
-  // 日本語以外はすべて英語
+  // 対応言語（ja / en）以外の言語環境（例: zh, fr, de, es 等）は国際標準として英語をデフォルトとする
   return 'en';
 }
 
