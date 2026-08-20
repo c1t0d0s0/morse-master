@@ -1,4 +1,4 @@
-# Morse Master (モールスマスター)
+# Morse Master
 
 <p align="center">
   <strong>An interactive web application to master International Morse Code and Japanese Wabun Morse code with sound, visuals, and tapping practice.</strong>
