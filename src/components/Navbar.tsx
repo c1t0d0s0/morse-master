@@ -1,6 +1,7 @@
 import React from 'react';
-import { Headphones, Radio, BookOpen, Repeat, Settings, Zap, Volume2, Eye } from 'lucide-react';
+import { Headphones, Radio, BookOpen, Repeat, Settings, Zap, Volume2, Eye, Globe } from 'lucide-react';
 import { QuizMode, AudioEngineSettings } from '../types';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface NavbarProps {
   currentMode: QuizMode;
@@ -17,13 +18,19 @@ export const Navbar: React.FC<NavbarProps> = ({
   settings,
   onToggleVisualOnly,
 }) => {
+  const { language, setLanguageMode, t } = useTranslation();
+
   const navItems: Array<{ mode: QuizMode; label: string; icon: React.ReactNode }> = [
-    { mode: 'listening', label: '聞き取り練習', icon: <Headphones size={18} /> },
-    { mode: 'tapping', label: 'タップ送信練習', icon: <Zap size={18} /> },
-    { mode: 'reference', label: '符号一覧表', icon: <BookOpen size={18} /> },
-    { mode: 'translator', label: '翻訳＆再生', icon: <Repeat size={18} /> },
-    { mode: 'free-keyer', label: 'フリー電信機', icon: <Radio size={18} /> },
+    { mode: 'listening', label: t.nav.listening, icon: <Headphones size={18} /> },
+    { mode: 'tapping', label: t.nav.tapping, icon: <Zap size={18} /> },
+    { mode: 'reference', label: t.nav.reference, icon: <BookOpen size={18} /> },
+    { mode: 'translator', label: t.nav.translator, icon: <Repeat size={18} /> },
+    { mode: 'free-keyer', label: t.nav.freeKeyer, icon: <Radio size={18} /> },
   ];
+
+  const toggleLanguage = () => {
+    setLanguageMode(language === 'ja' ? 'en' : 'ja');
+  };
 
   return (
     <header className="sticky top-0 z-40 bg-slate-950/90 backdrop-blur border-b border-slate-800">
@@ -38,17 +45,30 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div>
               <div className="flex items-center gap-1.5 sm:gap-2">
                 <span className="font-extrabold text-sm sm:text-lg tracking-tight bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-400 bg-clip-text text-transparent">
-                  モールスマスター
+                  {t.appName}
                 </span>
-                <span className="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded bg-cyan-950/80 border border-cyan-800/80 text-cyan-400 font-bold hidden sm:inline">
-                  Morse Master
-                </span>
+                {language === 'ja' && (
+                  <span className="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded bg-cyan-950/80 border border-cyan-800/80 text-cyan-400 font-bold hidden sm:inline">
+                    {t.appSubname}
+                  </span>
+                )}
               </div>
             </div>
           </div>
 
           {/* Quick Header Controls */}
           <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Language Quick Toggle */}
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg sm:rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-cyan-500/40 text-[11px] sm:text-xs font-semibold transition"
+              title={t.header.langSelect}
+              aria-label={t.header.langSelect}
+            >
+              <Globe size={13} className="text-cyan-400" />
+              <span>{language === 'ja' ? 'EN' : '日本語'}</span>
+            </button>
+
             {/* Quick Visual/Sound Mode Toggle */}
             <button
               onClick={onToggleVisualOnly}
@@ -57,12 +77,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                   ? 'bg-amber-500/10 border-amber-500/40 text-amber-400'
                   : 'bg-slate-900 border-slate-800 text-slate-300 hover:text-white'
               }`}
-              title={settings.visualOnly ? '消音視覚モード中（クリックで音声ON）' : '音声再生中（クリックで消音視覚モード）'}
+              title={settings.visualOnly ? t.header.muteActiveTitle : t.header.soundActiveTitle}
             >
               {settings.visualOnly ? (
                 <>
                   <Eye size={13} />
-                  <span className="hidden xs:inline sm:inline">消音</span>
+                  <span className="hidden xs:inline sm:inline">{t.header.mute}</span>
                 </>
               ) : (
                 <>
@@ -76,7 +96,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={onOpenSettings}
               className="p-1 sm:p-1.5 rounded-lg sm:rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 transition"
-              aria-label="設定"
+              aria-label={t.header.settingsTitle}
+              title={t.header.settingsTitle}
             >
               <Settings size={15} />
             </button>

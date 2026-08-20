@@ -4,12 +4,14 @@ import { textToMorse, morseToDotsAndDashes } from '../data/morseData';
 import { AudioEngineSettings } from '../types';
 import { morseAudio } from '../audio/morseAudioEngine';
 import { MorseVisualizer } from './MorseVisualizer';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface TranslatorProps {
   settings: AudioEngineSettings;
 }
 
 export const Translator: React.FC<TranslatorProps> = ({ settings }) => {
+  const { language, t } = useTranslation();
   const [inputText, setInputText] = useState<string>('SOS');
   const [isWabunMode, setIsWabunMode] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -21,14 +23,21 @@ export const Translator: React.FC<TranslatorProps> = ({ settings }) => {
   const converted = textToMorse(inputText, isWabunMode);
   const morseDisplay = converted.code ? morseToDotsAndDashes(converted.code) : '';
 
-  // プリセットサンプル
-  const samplePresets = [
+  // プリセットサンプル（言語に応じたプリセット）
+  const samplePresets = language === 'ja' ? [
     { label: 'SOS (救難信号)', text: 'SOS', wabun: false },
     { label: 'CQ (各局呼出)', text: 'CQ CQ CQ', wabun: false },
     { label: '73 (Best Regards)', text: '73', wabun: false },
     { label: 'こんにちは', text: 'コンニチハ', wabun: true },
     { label: '本日晴天ナリ', text: 'ホンジツセイテンナリ', wabun: true },
     { label: 'モールス信号', text: 'モールスシンゴウ', wabun: true },
+  ] : [
+    { label: 'SOS (Distress)', text: 'SOS', wabun: false },
+    { label: 'CQ (Calling CQ)', text: 'CQ CQ CQ', wabun: false },
+    { label: '73 (Best Regards)', text: '73', wabun: false },
+    { label: 'HELLO WORLD', text: 'HELLO WORLD', wabun: false },
+    { label: 'MAYDAY', text: 'MAYDAY MAYDAY', wabun: false },
+    { label: 'Konnichiwa (Wabun)', text: 'コンニチハ', wabun: true },
   ];
 
   const handlePlay = async () => {
@@ -76,10 +85,10 @@ export const Translator: React.FC<TranslatorProps> = ({ settings }) => {
         <div>
           <h2 className="text-lg sm:text-xl font-bold text-slate-100 flex items-center gap-2">
             <Repeat size={20} className="text-cyan-400" />
-            モールス信号 翻訳＆再生機
+            {t.translator.title}
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            日本語（カナ）や欧文・数字を即座にモールス信号に変換・再生します。
+            {t.translator.subtitle}
           </p>
         </div>
 
@@ -93,7 +102,7 @@ export const Translator: React.FC<TranslatorProps> = ({ settings }) => {
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            欧文/数字
+            {t.translator.modeWestern}
           </button>
           <button
             onClick={() => setIsWabunMode(true)}
@@ -103,7 +112,7 @@ export const Translator: React.FC<TranslatorProps> = ({ settings }) => {
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            和文
+            {t.translator.modeWabun}
           </button>
         </div>
       </div>
@@ -112,7 +121,7 @@ export const Translator: React.FC<TranslatorProps> = ({ settings }) => {
       <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
         <span className="text-xs font-semibold text-slate-400 whitespace-nowrap flex items-center gap-1">
           <Sparkles size={12} className="text-amber-400" />
-          定番:
+          {t.translator.presets}
         </span>
         {samplePresets.map((preset, idx) => (
           <button
@@ -133,12 +142,12 @@ export const Translator: React.FC<TranslatorProps> = ({ settings }) => {
         {/* Input Text Area */}
         <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 shadow-xl">
           <label className="text-[10px] uppercase font-mono tracking-widest text-slate-400 block mb-1">
-            変換元テキスト (INPUT TEXT)
+            {t.translator.inputLabel}
           </label>
           <textarea
             value={inputText}
             onChange={e => setInputText(e.target.value)}
-            placeholder={isWabunMode ? 'カタカナまたはひらがなを入力...' : 'アルファベット・数字を入力...'}
+            placeholder={isWabunMode ? t.translator.inputPlaceholderWabun : t.translator.inputPlaceholderWestern}
             rows={2}
             className="w-full bg-slate-950/80 border border-slate-700 focus:border-cyan-400 rounded-xl p-2.5 text-base sm:text-lg font-semibold text-slate-100 placeholder-slate-600 focus:outline-none transition resize-none shadow-inner"
           />
@@ -163,7 +172,7 @@ export const Translator: React.FC<TranslatorProps> = ({ settings }) => {
                 className="flex items-center gap-1.5 px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 disabled:opacity-40 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-cyan-500/20 hover:scale-105 transition text-sm sm:text-base"
               >
                 <Play size={16} fill="currentColor" />
-                <span>モールス信号を再生</span>
+                <span>{t.translator.play}</span>
               </button>
             ) : (
               <button
@@ -171,7 +180,7 @@ export const Translator: React.FC<TranslatorProps> = ({ settings }) => {
                 className="flex items-center gap-1.5 px-6 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-extrabold rounded-xl shadow-lg shadow-rose-600/30 transition animate-pulse text-sm sm:text-base"
               >
                 <Square size={16} fill="currentColor" />
-                <span>停止</span>
+                <span>{t.translator.stop}</span>
               </button>
             )}
           </div>
@@ -180,7 +189,7 @@ export const Translator: React.FC<TranslatorProps> = ({ settings }) => {
           <div className="bg-slate-950/90 rounded-2xl p-3 border border-slate-800">
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[10px] uppercase font-mono tracking-widest text-slate-400">
-                モールス符号 (DOTS & DASHES)
+                {t.translator.dotsAndDashesLabel}
               </span>
               <div className="flex items-center gap-1.5">
                 <button
@@ -188,27 +197,27 @@ export const Translator: React.FC<TranslatorProps> = ({ settings }) => {
                   className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold transition"
                 >
                   {copiedType === 'dots' ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
-                  <span>{copiedType === 'dots' ? '完了' : '記号コピー'}</span>
+                  <span>{copiedType === 'dots' ? t.translator.copied : t.translator.copyDots}</span>
                 </button>
                 <button
                   onClick={() => copyToClipboard(converted.code, 'raw')}
                   className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold transition"
                 >
                   {copiedType === 'raw' ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
-                  <span>{copiedType === 'raw' ? '完了' : 'Rawコピー'}</span>
+                  <span>{copiedType === 'raw' ? t.translator.copied : t.translator.copyRaw}</span>
                 </button>
               </div>
             </div>
 
             <div className="font-mono text-lg sm:text-xl font-bold text-amber-300 tracking-[0.2em] break-all select-all min-h-[32px] flex items-center">
-              {morseDisplay || <span className="text-slate-600 text-xs">テキストを入力すると符号が表示されます</span>}
+              {morseDisplay || <span className="text-slate-600 text-xs">{t.translator.emptyHint}</span>}
             </div>
           </div>
 
           {/* Breakdown cards */}
           {converted.items.length > 0 && (
             <div>
-              <div className="text-[11px] font-semibold text-slate-400 mb-1.5">文字ごとの分解:</div>
+              <div className="text-[11px] font-semibold text-slate-400 mb-1.5">{t.translator.breakdown}</div>
               <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto">
                 {converted.items.map((item, idx) => (
                   <div

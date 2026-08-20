@@ -9,7 +9,9 @@ export interface MorseItem {
   code: string; // e.g. ".-", "-...", "..-." using '.' for dot and '-' for dash
   category: MorseCategory;
   nameJa: string;
+  nameEn?: string;
   mnemonic?: string; // 覚え方 / 語呂合わせ (例: "A: アメー", "B: ビートたけし", etc.)
+  mnemonicEn?: string; // e.g. "Alpha (di-dah)"
   soundDisplay?: string; // 視覚表示用 (例: "・－")
 }
 

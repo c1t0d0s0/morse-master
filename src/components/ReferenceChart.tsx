@@ -3,22 +3,24 @@ import { Search, Volume2, BookOpen } from 'lucide-react';
 import { ALPHABET_MORSE, NUMBER_MORSE, WABUN_MORSE, SYMBOL_MORSE, morseToDotsAndDashes } from '../data/morseData';
 import { MorseItem, MorseCategory, AudioEngineSettings } from '../types';
 import { morseAudio } from '../audio/morseAudioEngine';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface ReferenceChartProps {
   settings?: AudioEngineSettings;
 }
 
 export const ReferenceChart: React.FC<ReferenceChartProps> = () => {
+  const { language, t } = useTranslation();
   const [activeTab, setActiveTab] = useState<MorseCategory | 'all'>('alphabet');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [playingCode, setPlayingCode] = useState<string | null>(null);
 
   const tabs: Array<{ id: MorseCategory | 'all'; label: string; count: number }> = [
-    { id: 'alphabet', label: 'アルファベット (A-Z)', count: ALPHABET_MORSE.length },
-    { id: 'number', label: '数字 (0-9)', count: NUMBER_MORSE.length },
-    { id: 'wabun', label: '和文モールス (カナ)', count: WABUN_MORSE.length },
-    { id: 'symbol', label: '記号', count: SYMBOL_MORSE.length },
-    { id: 'all', label: 'すべて表示', count: ALPHABET_MORSE.length + NUMBER_MORSE.length + WABUN_MORSE.length + SYMBOL_MORSE.length },
+    { id: 'alphabet', label: t.reference.tabAlphabet, count: ALPHABET_MORSE.length },
+    { id: 'number', label: t.reference.tabNumber, count: NUMBER_MORSE.length },
+    { id: 'wabun', label: t.reference.tabWabun, count: WABUN_MORSE.length },
+    { id: 'symbol', label: t.reference.tabSymbol, count: SYMBOL_MORSE.length },
+    { id: 'all', label: t.reference.tabAll, count: ALPHABET_MORSE.length + NUMBER_MORSE.length + WABUN_MORSE.length + SYMBOL_MORSE.length },
   ];
 
   const getItemsForTab = (): MorseItem[] => {
@@ -38,9 +40,11 @@ export const ReferenceChart: React.FC<ReferenceChartProps> = () => {
     return (
       item.char.toLowerCase().includes(q) ||
       item.nameJa.toLowerCase().includes(q) ||
+      (item.nameEn && item.nameEn.toLowerCase().includes(q)) ||
       item.code.includes(q) ||
       dots.includes(q) ||
-      (item.mnemonic && item.mnemonic.toLowerCase().includes(q))
+      (item.mnemonic && item.mnemonic.toLowerCase().includes(q)) ||
+      (item.mnemonicEn && item.mnemonicEn.toLowerCase().includes(q))
     );
   });
 
@@ -58,10 +62,10 @@ export const ReferenceChart: React.FC<ReferenceChartProps> = () => {
         <div>
           <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
             <BookOpen size={22} className="text-cyan-400" />
-            モールス符号一覧表 (Reference Chart)
+            {t.reference.title}
           </h2>
           <p className="text-xs text-slate-400 mt-1">
-            各カードをクリックすると音声を試聴できます。覚え方（語呂合わせ）も確認できます。
+            {t.reference.subtitle}
           </p>
         </div>
 
@@ -72,7 +76,7 @@ export const ReferenceChart: React.FC<ReferenceChartProps> = () => {
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            placeholder="文字・読み・符号で検索..."
+            placeholder={t.reference.searchPlaceholder}
             className="w-full pl-9 pr-4 py-2 bg-slate-950/80 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition"
           />
         </div>
@@ -102,6 +106,11 @@ export const ReferenceChart: React.FC<ReferenceChartProps> = () => {
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
         {filteredItems.map((item, idx) => {
           const isPlaying = playingCode === item.code;
+          const displayName = language === 'ja' ? item.nameJa : (item.nameEn || item.nameJa);
+          const displayMnemonic = language === 'ja'
+            ? (item.mnemonic || item.mnemonicEn)
+            : (item.mnemonicEn || item.mnemonic);
+
           return (
             <div
               key={`${item.category}-${item.char}-${idx}`}
@@ -126,7 +135,7 @@ export const ReferenceChart: React.FC<ReferenceChartProps> = () => {
                       ? 'bg-cyan-500 text-slate-950 border-cyan-400'
                       : 'bg-slate-800/80 border-slate-700 text-slate-400 group-hover:text-white group-hover:bg-slate-700'
                   }`}
-                  aria-label={`${item.char}の音を再生`}
+                  aria-label={t.reference.playCharSound.replace('{char}', item.char)}
                 >
                   <Volume2 size={16} />
                 </button>
@@ -142,12 +151,12 @@ export const ReferenceChart: React.FC<ReferenceChartProps> = () => {
                 </div>
               </div>
 
-              {/* Japanese Name & Mnemonic */}
+              {/* Name & Mnemonic */}
               <div className="mt-2 pt-2 border-t border-slate-800/80">
-                <div className="text-xs text-slate-300 font-semibold">{item.nameJa}</div>
-                {item.mnemonic && (
+                <div className="text-xs text-slate-300 font-semibold">{displayName}</div>
+                {displayMnemonic && (
                   <div className="text-[11px] text-cyan-400/90 mt-0.5 line-clamp-1 group-hover:line-clamp-none transition-all">
-                    {item.mnemonic}
+                    {displayMnemonic}
                   </div>
                 )}
               </div>
@@ -158,7 +167,7 @@ export const ReferenceChart: React.FC<ReferenceChartProps> = () => {
 
       {filteredItems.length === 0 && (
         <div className="p-12 text-center bg-slate-900/60 rounded-2xl border border-slate-800 text-slate-500">
-          「{searchQuery}」に一致するモールス符号は見つかりませんでした。
+          {t.reference.noResults.replace('{query}', searchQuery)}
         </div>
       )}
     </div>

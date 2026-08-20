@@ -6,12 +6,14 @@ import { getRandomQuizItem, QuizWord } from '../data/wordLists';
 import { textToMorse, morseToDotsAndDashes, morseToText } from '../data/morseData';
 import { morseAudio } from '../audio/morseAudioEngine';
 import { MorseVisualizer } from './MorseVisualizer';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface TappingQuizProps {
   settings: AudioEngineSettings;
 }
 
 export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
+  const { language, t } = useTranslation();
   const [charset, setCharset] = useState<TargetCharset>('alphabet');
   const [level, setLevel] = useState<DifficultyLevel>('beginner');
   const [keyingMode, setKeyingMode] = useState<KeyingMode>('paddle');
@@ -225,12 +227,12 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
         <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2.5">
           {/* Charset selector */}
           <div className="flex items-center gap-1 overflow-x-auto pb-0.5 sm:pb-0">
-            <span className="text-[11px] sm:text-xs font-semibold text-slate-400 mr-0.5 sm:mr-1">対象:</span>
+            <span className="text-[11px] sm:text-xs font-semibold text-slate-400 mr-0.5 sm:mr-1">{t.controls.charset}</span>
             {[
-              { id: 'all', label: 'すべて' },
-              { id: 'alphabet', label: '欧文' },
-              { id: 'number', label: '数字' },
-              { id: 'wabun', label: '和文' },
+              { id: 'all', label: t.controls.all },
+              { id: 'alphabet', label: t.controls.alphabet },
+              { id: 'number', label: t.controls.number },
+              { id: 'wabun', label: t.controls.wabun },
             ].map(tab => (
               <button
                 key={tab.id}
@@ -248,11 +250,11 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
 
           {/* Difficulty Level Selector */}
           <div className="flex items-center gap-1">
-            <span className="text-[11px] sm:text-xs font-semibold text-slate-400 mr-0.5 sm:mr-1">難易度:</span>
+            <span className="text-[11px] sm:text-xs font-semibold text-slate-400 mr-0.5 sm:mr-1">{t.controls.level}</span>
             {[
-              { id: 'beginner', label: '初級' },
-              { id: 'intermediate', label: '中級' },
-              { id: 'advanced', label: '上級' },
+              { id: 'beginner', label: t.controls.beginner },
+              { id: 'intermediate', label: t.controls.intermediate },
+              { id: 'advanced', label: t.controls.advanced },
             ].map(l => (
               <button
                 key={l.id}
@@ -277,9 +279,9 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
                   ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
-              title="短点と長点の2つのボタンで入力"
+              title={t.tapping.paddleTitle}
             >
-              パドル
+              {t.controls.paddle}
             </button>
             <button
               onClick={() => setKeyingMode('straight')}
@@ -288,9 +290,9 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
                   ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
-              title="押している長さで短点・長点を判定"
+              title={t.tapping.straightTitle}
             >
-              電鍵
+              {t.controls.straight}
             </button>
           </div>
         </div>
@@ -298,11 +300,11 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
         {/* Stats */}
         <div className="mt-1.5 pt-1.5 sm:mt-2.5 sm:pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] sm:text-xs text-slate-400">
           <div className="flex items-center gap-3">
-            <span>スコア: <strong className="text-cyan-400 font-mono">{score}</strong></span>
-            <span>連続正解: <strong className="text-amber-400 font-mono">{streak}</strong> 🔥</span>
+            <span>{t.controls.score} <strong className="text-cyan-400 font-mono">{score}</strong></span>
+            <span>{t.controls.streak} <strong className="text-amber-400 font-mono">{streak}</strong> 🔥</span>
           </div>
           <div className="text-slate-500 text-[10px] sm:text-[11px] hidden sm:block">
-            {keyingMode === 'paddle' ? 'PCキー: [J]=短点, [K]=長点, [Space]=次, [Enter]=判定' : 'PCキー: [Space]=電鍵長押し, [Enter]=判定'}
+            {keyingMode === 'paddle' ? t.tapping.pcKeyPaddle : t.tapping.pcKeyStraight}
           </div>
         </div>
       </div>
@@ -315,15 +317,17 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
             {/* Target Word / Character Prompt */}
             <div className="bg-slate-950/80 rounded-xl sm:rounded-2xl p-2 sm:p-3 border border-slate-800 text-center flex flex-col items-center justify-center min-h-[72px] sm:min-h-0">
               <span className="text-[9px] sm:text-[10px] uppercase font-mono tracking-widest text-slate-400 block">
-                お題 (TARGET)
+                {t.tapping.target}
               </span>
               <div className="inline-block px-3 py-0.5 sm:px-5 sm:py-1 bg-gradient-to-b from-slate-900 to-slate-950 border border-cyan-500/40 rounded-xl sm:rounded-2xl shadow-md shadow-cyan-500/10 my-0.5">
                 <span className="text-2xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-white to-blue-300 tracking-wider">
                   {currentWord?.text}
                 </span>
               </div>
-              {currentWord?.meaningJa && (
-                <div className="text-[10px] sm:text-xs text-slate-400 truncate max-w-full">{currentWord.meaningJa}</div>
+              {currentWord && (
+                <div className="text-[10px] sm:text-xs text-slate-400 truncate max-w-full">
+                  {language === 'ja' ? currentWord.meaningJa : (currentWord.meaningEn || currentWord.meaningJa)}
+                </div>
               )}
 
               {/* Hint Toggle */}
@@ -333,7 +337,7 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
                   className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] text-amber-400 hover:text-amber-300 bg-amber-950/40 px-2 py-0.2 rounded-full border border-amber-800/60 transition"
                 >
                   <HelpCircle size={10} />
-                  {showHint ? '隠す' : 'ヒント'}
+                  {showHint ? t.tapping.hideHint : t.tapping.hint}
                 </button>
                 {showHint && targetConverted && (
                   <div className="mt-0.5 text-[11px] sm:text-xs font-mono text-amber-300 font-bold tracking-widest animate-fadeIn">
@@ -376,7 +380,7 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
 
                 {!currentCharBuffer && committedChars.length === 0 && (
                   <span className="text-slate-600 text-[11px] sm:text-xs italic whitespace-nowrap">
-                    {keyingMode === 'paddle' ? '下のボタンをタップして送信' : '下の電鍵を押して打鍵'}
+                    {keyingMode === 'paddle' ? t.tapping.paddlePlaceholder : t.tapping.straightPlaceholder}
                   </span>
                 )}
               </div>
@@ -395,8 +399,8 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
                       className="h-16 sm:h-22 bg-gradient-to-b from-slate-800 to-slate-900 active:from-cyan-600 active:to-cyan-700 active:scale-95 text-slate-100 hover:text-white rounded-xl sm:rounded-2xl border-2 border-slate-700 active:border-cyan-400 shadow-md sm:shadow-lg flex flex-col items-center justify-center gap-0.5 transition-all select-none touch-manipulation cursor-pointer"
                     >
                       <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
-                      <span className="text-sm sm:text-lg font-black">短点 ( ・ )</span>
-                      <span className="text-[9px] sm:text-[10px] font-mono text-slate-400 hidden sm:inline">キー [ J ]</span>
+                      <span className="text-sm sm:text-lg font-black">{t.tapping.dotButton}</span>
+                      <span className="text-[9px] sm:text-[10px] font-mono text-slate-400 hidden sm:inline">{t.tapping.keyJ}</span>
                     </button>
 
                     {/* Dash (長点) Button */}
@@ -406,8 +410,8 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
                       className="h-16 sm:h-22 bg-gradient-to-b from-slate-800 to-slate-900 active:from-blue-600 active:to-blue-700 active:scale-95 text-slate-100 hover:text-white rounded-xl sm:rounded-2xl border-2 border-slate-700 active:border-blue-400 shadow-md sm:shadow-lg flex flex-col items-center justify-center gap-0.5 transition-all select-none touch-manipulation cursor-pointer"
                     >
                       <div className="w-8 h-2.5 sm:w-10 sm:h-3 rounded-full bg-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.8)]" />
-                      <span className="text-sm sm:text-lg font-black">長点 ( － )</span>
-                      <span className="text-[9px] sm:text-[10px] font-mono text-slate-400 hidden sm:inline">キー [ K ]</span>
+                      <span className="text-sm sm:text-lg font-black">{t.tapping.dashButton}</span>
+                      <span className="text-[9px] sm:text-[10px] font-mono text-slate-400 hidden sm:inline">{t.tapping.keyK}</span>
                     </button>
                   </div>
                 ) : (
@@ -426,9 +430,9 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
                     >
                       <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 ${activeSignal ? 'bg-white border-amber-200' : 'bg-slate-700 border-slate-600'}`} />
                       <span className="text-sm sm:text-lg font-black text-white">
-                        {activeSignal ? '電波送信中...' : '電鍵をタップ / 長押し'}
+                        {activeSignal ? t.tapping.straightActive : t.tapping.straightIdle}
                       </span>
-                      <span className="text-[10px] sm:text-[11px] text-slate-400">短押し=短点 (・) / 長押し=長点 (－)</span>
+                      <span className="text-[10px] sm:text-[11px] text-slate-400">{t.tapping.straightDesc}</span>
                     </button>
                   </div>
                 )}
@@ -440,10 +444,10 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
                     onClick={commitCurrentChar}
                     disabled={!currentCharBuffer}
                     className="py-2 sm:py-2.5 px-1 bg-slate-800 hover:bg-slate-750 disabled:opacity-40 text-slate-200 text-[11px] sm:text-xs font-bold rounded-lg sm:rounded-xl border border-slate-700 flex items-center justify-center gap-0.5 transition"
-                    title="現在の文字を確定して次の文字へ"
+                    title={t.tapping.nextCharTitle}
                   >
                     <CornerDownLeft size={13} />
-                    <span>次文字</span>
+                    <span>{t.tapping.nextChar}</span>
                   </button>
 
                   <button
@@ -451,10 +455,10 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
                     onClick={handleBackspace}
                     disabled={!currentCharBuffer && committedChars.length === 0}
                     className="py-2 sm:py-2.5 px-1 bg-slate-800 hover:bg-slate-750 disabled:opacity-40 text-slate-200 text-[11px] sm:text-xs font-bold rounded-lg sm:rounded-xl border border-slate-700 flex items-center justify-center gap-0.5 transition"
-                    title="直前の入力を1つ削除"
+                    title={t.tapping.deleteTitle}
                   >
                     <Delete size={13} />
-                    <span>削除</span>
+                    <span>{t.tapping.delete}</span>
                   </button>
 
                   <button
@@ -462,10 +466,10 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
                     onClick={handleClear}
                     disabled={!currentCharBuffer && committedChars.length === 0}
                     className="py-2 sm:py-2.5 px-1 bg-slate-800 hover:bg-slate-750 disabled:opacity-40 text-slate-200 text-[11px] sm:text-xs font-bold rounded-lg sm:rounded-xl border border-slate-700 flex items-center justify-center gap-0.5 transition"
-                    title="入力をすべてクリア"
+                    title={t.tapping.clearTitle}
                   >
                     <RotateCcw size={13} />
-                    <span>クリア</span>
+                    <span>{t.tapping.clear}</span>
                   </button>
 
                   <button
@@ -474,7 +478,7 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
                     disabled={!currentCharBuffer && committedChars.length === 0}
                     className="py-2 sm:py-2.5 px-1 sm:px-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 disabled:opacity-40 text-slate-950 text-xs sm:text-sm font-black rounded-lg sm:rounded-xl shadow-md sm:shadow-lg shadow-cyan-500/20 transition flex items-center justify-center gap-0.5"
                   >
-                    <span>判定する</span>
+                    <span>{t.tapping.submit}</span>
                   </button>
                 </div>
               </div>
@@ -486,7 +490,7 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
                   className="w-full py-2.5 sm:py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-extrabold rounded-xl sm:rounded-2xl shadow-lg transition text-sm sm:text-base flex items-center justify-center gap-2"
                   autoFocus
                 >
-                  <span>次の問題へ進む</span>
+                  <span>{t.tapping.nextQuestion}</span>
                   <ArrowRight size={16} />
                 </button>
               </div>
@@ -510,10 +514,10 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
                     )}
                     <div>
                       <div className="font-extrabold text-xs sm:text-base">
-                        {isCorrect ? '送信成功！ Accurate!' : '送信ミス！ Check Morse'}
+                        {isCorrect ? t.tapping.success : t.tapping.error}
                       </div>
                       <div className="text-[11px] opacity-80">
-                        目標: <span className="font-bold text-white">{currentWord.text}</span> ({morseToDotsAndDashes(targetConverted.code)})
+                        {t.tapping.targetLabel} <span className="font-bold text-white">{currentWord.text}</span> ({morseToDotsAndDashes(targetConverted.code)})
                       </div>
                     </div>
                   </div>

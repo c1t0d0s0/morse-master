@@ -1,5 +1,6 @@
 import React from 'react';
 import { Volume2, Eye } from 'lucide-react';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface MorseVisualizerProps {
   isActive: boolean;
@@ -16,6 +17,8 @@ export const MorseVisualizer: React.FC<MorseVisualizerProps> = ({
   isVisualOnly = false,
   showTextSymbol = true,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="w-full h-full flex flex-col items-center justify-center py-1.5 px-2 sm:py-3 sm:px-4 bg-slate-900/80 rounded-xl sm:rounded-2xl border border-slate-800 backdrop-blur shadow-inner select-none">
       {/* LED Signal Indicator & Oscilloscope Waves */}
@@ -36,7 +39,7 @@ export const MorseVisualizer: React.FC<MorseVisualizerProps> = ({
             />
           </div>
           <span className="text-[7px] sm:text-[9px] font-mono tracking-wider text-slate-400 uppercase">
-            {isActive ? 'SIGNAL' : 'OFF'}
+            {isActive ? t.visualizer.signalOn : t.visualizer.signalOff}
           </span>
         </div>
 
@@ -78,12 +81,12 @@ export const MorseVisualizer: React.FC<MorseVisualizerProps> = ({
         {isVisualOnly ? (
           <span className="inline-flex items-center gap-0.5 text-amber-400 bg-amber-950/40 px-1.5 py-0.2 rounded-full border border-amber-800/50">
             <Eye size={10} />
-            視覚
+            {t.visualizer.visualMode}
           </span>
         ) : (
           <span className="inline-flex items-center gap-0.5 text-emerald-400 bg-emerald-950/40 px-1.5 py-0.2 rounded-full border border-emerald-800/50">
             <Volume2 size={10} />
-            音連動
+            {t.visualizer.audioMode}
           </span>
         )}
 
@@ -95,7 +98,7 @@ export const MorseVisualizer: React.FC<MorseVisualizerProps> = ({
               : 'opacity-0 pointer-events-none text-transparent bg-transparent border-transparent'
           }`}
         >
-          {currentSymbol === '.' ? '短点' : '長点'}
+          {currentSymbol === '.' ? t.visualizer.dot : t.visualizer.dash}
         </span>
       </div>
     </div>

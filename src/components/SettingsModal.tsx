@@ -1,6 +1,7 @@
 import React from 'react';
-import { X, Volume2, Eye, Sliders, Gauge, Music } from 'lucide-react';
+import { X, Volume2, Eye, Sliders, Gauge, Music, Globe } from 'lucide-react';
 import { AudioEngineSettings } from '../types';
+import { useTranslation, LanguageMode } from '../i18n/LanguageContext';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -15,29 +16,37 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   settings,
   onUpdateSettings,
 }) => {
+  const { languageMode, setLanguageMode, t } = useTranslation();
+
   if (!isOpen) return null;
 
   const wpmPresets = [
-    { label: '初級 (10 WPM)', value: 10 },
-    { label: '標準 (15 WPM)', value: 15 },
-    { label: '高速 (20 WPM)', value: 20 },
-    { label: '達人 (28 WPM)', value: 28 },
+    { label: t.settingsModal.speedPresetBeginner, value: 10 },
+    { label: t.settingsModal.speedPresetStandard, value: 15 },
+    { label: t.settingsModal.speedPresetFast, value: 20 },
+    { label: t.settingsModal.speedPresetExpert, value: 28 },
   ];
 
   const freqPresets = [
-    { label: '低音 (500Hz)', value: 500 },
-    { label: '標準 (650Hz)', value: 650 },
-    { label: '高音 (800Hz)', value: 800 },
+    { label: t.settingsModal.pitchPresetLow, value: 500 },
+    { label: t.settingsModal.pitchPresetStandard, value: 650 },
+    { label: t.settingsModal.pitchPresetHigh, value: 800 },
+  ];
+
+  const languageOptions: Array<{ mode: LanguageMode; label: string }> = [
+    { mode: 'auto', label: t.settingsModal.languageAuto },
+    { mode: 'ja', label: t.settingsModal.languageJa },
+    { mode: 'en', label: t.settingsModal.languageEn },
   ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
-      <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 relative">
+      <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-slate-400 hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-800 transition"
-          aria-label="閉じる"
+          aria-label={t.settingsModal.closeButton}
         >
           <X size={20} />
         </button>
@@ -48,12 +57,36 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <Sliders size={22} />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-slate-100">設定 (Settings)</h2>
-            <p className="text-xs text-slate-400">再生速度・音程・消音環境の設定</p>
+            <h2 className="text-xl font-bold text-slate-100">{t.settingsModal.title}</h2>
+            <p className="text-xs text-slate-400">{t.settingsModal.subtitle}</p>
           </div>
         </div>
 
         <div className="space-y-6">
+          {/* Language Selection */}
+          <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-2.5">
+            <label className="text-sm font-semibold text-slate-200 flex items-center gap-2">
+              <Globe size={16} className="text-cyan-400" />
+              {t.settingsModal.languageLabel}
+            </label>
+            <div className="grid grid-cols-3 gap-1.5">
+              {languageOptions.map(opt => (
+                <button
+                  key={opt.mode}
+                  type="button"
+                  onClick={() => setLanguageMode(opt.mode)}
+                  className={`text-xs py-2 px-2 rounded-lg border font-semibold transition text-center ${
+                    languageMode === opt.mode
+                      ? 'bg-cyan-500/20 border-cyan-500/60 text-cyan-300 shadow-sm shadow-cyan-500/10'
+                      : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-850'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Visual Only Mode (消音環境向け記号表示) */}
           <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800 flex items-center justify-between">
             <div className="flex items-start gap-3">
@@ -61,8 +94,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 {settings.visualOnly ? <Eye size={20} /> : <Volume2 size={20} />}
               </div>
               <div>
-                <div className="font-semibold text-sm text-slate-200">視覚のみモード (消音環境)</div>
-                <div className="text-xs text-slate-400">音を出さずにランプと「・－」記号で学習</div>
+                <div className="font-semibold text-sm text-slate-200">{t.settingsModal.visualOnlyLabel}</div>
+                <div className="text-xs text-slate-400">{t.settingsModal.visualOnlyDesc}</div>
               </div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
@@ -81,10 +114,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <div className="flex justify-between items-center mb-2">
               <label className="text-sm font-semibold text-slate-300 flex items-center gap-1.5">
                 <Gauge size={16} className="text-cyan-400" />
-                再生速度 (WPM):
+                {t.settingsModal.speedLabel}
               </label>
               <span className="font-mono font-bold text-cyan-400 bg-cyan-950/50 px-2 py-0.5 rounded border border-cyan-800 text-sm">
-                {settings.wpm} WPM (短点: {Math.round(1200 / settings.wpm)}ms)
+                {settings.wpm} WPM ({t.settingsModal.dotDuration.replace('{ms}', String(Math.round(1200 / settings.wpm)))})
               </span>
             </div>
             <input
@@ -102,11 +135,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <button
                   key={preset.value}
                   onClick={() => onUpdateSettings({ wpm: preset.value })}
-                  className={`text-xs py-1 px-2 rounded-lg border transition ${
+                  className={`text-xs py-1 px-2 rounded-lg border transition truncate ${
                     settings.wpm === preset.value
                       ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-300 font-bold'
                       : 'bg-slate-800/60 border-slate-700/60 text-slate-400 hover:text-slate-200'
                   }`}
+                  title={preset.label}
                 >
                   {preset.label.split(' ')[0]}
                 </button>
@@ -120,7 +154,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <div className="flex justify-between items-center mb-2">
                 <label className="text-sm font-semibold text-slate-300 flex items-center gap-1.5">
                   <Music size={16} className="text-cyan-400" />
-                  音の高さ (周波数):
+                  {t.settingsModal.pitchLabel}
                 </label>
                 <span className="font-mono font-bold text-cyan-400 bg-cyan-950/50 px-2 py-0.5 rounded border border-cyan-800 text-sm">
                   {settings.frequency} Hz
@@ -159,7 +193,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <div className="flex justify-between items-center mb-2">
                 <label className="text-sm font-semibold text-slate-300 flex items-center gap-1.5">
                   <Volume2 size={16} className="text-cyan-400" />
-                  音量:
+                  {t.settingsModal.volumeLabel}
                 </label>
                 <span className="font-mono font-bold text-cyan-400 text-sm">
                   {Math.round(settings.volume * 100)}%
@@ -184,7 +218,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             onClick={onClose}
             className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold rounded-xl shadow-lg transition"
           >
-            完了
+            {t.settingsModal.closeButton}
           </button>
         </div>
       </div>

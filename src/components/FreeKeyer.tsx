@@ -4,12 +4,14 @@ import { morseAudio } from '../audio/morseAudioEngine';
 import { morseToText, morseToDotsAndDashes } from '../data/morseData';
 import { AudioEngineSettings, KeyingMode } from '../types';
 import { MorseVisualizer } from './MorseVisualizer';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface FreeKeyerProps {
   settings: AudioEngineSettings;
 }
 
 export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
+  const { t } = useTranslation();
   const [isWabun, setIsWabun] = useState<boolean>(false);
   const [keyingMode, setKeyingMode] = useState<KeyingMode>('paddle');
   const [isPressing, setIsPressing] = useState<boolean>(false);
@@ -146,10 +148,10 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
         <div>
           <h2 className="text-lg sm:text-xl font-bold text-slate-100 flex items-center gap-2">
             <Radio size={20} className="text-cyan-400" />
-            フリー電信機 (Free Morse Keyer)
+            {t.freeKeyer.title}
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            好きなリズムで打鍵すると、自動的にモールス信号を認識してテキストに解読します。
+            {t.freeKeyer.subtitle}
           </p>
         </div>
 
@@ -162,7 +164,7 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
                 !isWabun ? 'bg-cyan-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              欧文
+              {t.freeKeyer.modeWestern}
             </button>
             <button
               onClick={() => setIsWabun(true)}
@@ -170,7 +172,7 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
                 isWabun ? 'bg-cyan-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              和文
+              {t.freeKeyer.modeWabun}
             </button>
           </div>
 
@@ -181,7 +183,7 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
                 keyingMode === 'paddle' ? 'bg-blue-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              パドル
+              {t.freeKeyer.modePaddle}
             </button>
             <button
               onClick={() => setKeyingMode('straight')}
@@ -189,7 +191,7 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
                 keyingMode === 'straight' ? 'bg-blue-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              電鍵
+              {t.freeKeyer.modeStraight}
             </button>
           </div>
         </div>
@@ -210,7 +212,7 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
         <div className="bg-slate-950/90 rounded-2xl p-3 border border-slate-800 space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-[10px] uppercase font-mono tracking-widest text-slate-400">
-              解読されたメッセージ (DECODED MESSAGE)
+              {t.freeKeyer.outputLabel}
             </span>
             <div className="flex items-center gap-1.5">
               <button
@@ -219,7 +221,7 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
                 className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-750 disabled:opacity-40 text-slate-300 hover:text-white text-xs font-semibold transition"
               >
                 {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
-                <span>{copied ? '完了' : 'コピー'}</span>
+                <span>{copied ? t.freeKeyer.copied : t.freeKeyer.copy}</span>
               </button>
               <button
                 onClick={handleClear}
@@ -227,7 +229,7 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
                 className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-750 disabled:opacity-40 text-slate-300 hover:text-rose-400 text-xs font-semibold transition"
               >
                 <Trash2 size={12} />
-                <span>クリア</span>
+                <span>{t.freeKeyer.clear}</span>
               </button>
             </div>
           </div>
@@ -257,7 +259,7 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
                 </span>
               ))
             ) : (
-              <span className="text-[10px] text-slate-600 font-mono">符号履歴がここに表示されます</span>
+              <span className="text-[10px] text-slate-600 font-mono">{t.freeKeyer.historyPlaceholder}</span>
             )}
           </div>
         </div>
@@ -271,8 +273,8 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
               className="h-20 sm:h-24 bg-gradient-to-b from-slate-800 to-slate-900 active:from-cyan-600 active:to-cyan-700 active:scale-95 text-slate-100 rounded-2xl border-2 border-slate-700 active:border-cyan-400 shadow-xl flex flex-col items-center justify-center gap-0.5 transition-all select-none touch-manipulation cursor-pointer"
             >
               <div className="w-5 h-5 rounded-full bg-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.9)]" />
-              <span className="text-lg font-black">短点 ( ・ )</span>
-              <span className="text-[10px] font-mono text-slate-400">キー [ J ]</span>
+              <span className="text-lg font-black">{t.freeKeyer.dotButton}</span>
+              <span className="text-[10px] font-mono text-slate-400">{t.freeKeyer.keyJ}</span>
             </button>
 
             <button
@@ -281,8 +283,8 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
               className="h-20 sm:h-24 bg-gradient-to-b from-slate-800 to-slate-900 active:from-blue-600 active:to-blue-700 active:scale-95 text-slate-100 rounded-2xl border-2 border-slate-700 active:border-blue-400 shadow-xl flex flex-col items-center justify-center gap-0.5 transition-all select-none touch-manipulation cursor-pointer"
             >
               <div className="w-12 h-3.5 rounded-full bg-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.9)]" />
-              <span className="text-lg font-black">長点 ( － )</span>
-              <span className="text-[10px] font-mono text-slate-400">キー [ K ]</span>
+              <span className="text-lg font-black">{t.freeKeyer.dashButton}</span>
+              <span className="text-[10px] font-mono text-slate-400">{t.freeKeyer.keyK}</span>
             </button>
           </div>
         ) : (
@@ -300,9 +302,9 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
             >
               <div className={`w-7 h-7 rounded-full border-2 ${isPressing ? 'bg-white border-amber-200' : 'bg-slate-700 border-slate-600'}`} />
               <span className="text-lg font-black text-white">
-                {isPressing ? '電信発信中 (TRANSMITTING)' : '電鍵をタップ / 長押し'}
+                {isPressing ? t.freeKeyer.transmitting : t.freeKeyer.straightIdle}
               </span>
-              <span className="text-[10px] text-slate-400 font-mono">PCキー: [ Space ] または画面タップ</span>
+              <span className="text-[10px] text-slate-400 font-mono">{t.freeKeyer.pcKeyHelp}</span>
             </button>
           </div>
         )}

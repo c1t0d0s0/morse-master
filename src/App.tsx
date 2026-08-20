@@ -9,8 +9,10 @@ import { SettingsModal } from './components/SettingsModal';
 import { QuizMode, AudioEngineSettings } from './types';
 import { morseAudio } from './audio/morseAudioEngine';
 import { Radio, Keyboard, Volume2 } from 'lucide-react';
+import { LanguageProvider, useTranslation } from './i18n/LanguageContext';
 
-export const App: React.FC = () => {
+const AppContent: React.FC = () => {
+  const { language, t } = useTranslation();
   const [currentMode, setCurrentMode] = useState<QuizMode>('listening');
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [settings, setSettings] = useState<AudioEngineSettings>(() => morseAudio.getSettings());
@@ -66,19 +68,21 @@ export const App: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Radio size={16} className="text-cyan-400" />
-            <span className="font-semibold text-slate-400">モールスマスター (Morse Master)</span>
+            <span className="font-semibold text-slate-400">
+              {language === 'ja' ? 'モールスマスター (Morse Master)' : 'Morse Master'}
+            </span>
             <span className="hidden sm:inline text-slate-700">|</span>
-            <span className="hidden sm:inline">欧文・数字・和文モールス対応</span>
+            <span className="hidden sm:inline">{t.appTagline}</span>
           </div>
 
           <div className="flex items-center gap-4 text-slate-400">
             <span className="flex items-center gap-1">
               <Keyboard size={14} className="text-slate-500" />
-              <span>PC: J (短点) / K (長点) / Space</span>
+              <span>{t.footer.pcKeys}</span>
             </span>
             <span className="flex items-center gap-1">
               <Volume2 size={14} className="text-slate-500" />
-              <span>Web Audio API</span>
+              <span>{t.footer.webAudio}</span>
             </span>
           </div>
         </div>
@@ -92,6 +96,14 @@ export const App: React.FC = () => {
         onUpdateSettings={handleUpdateSettings}
       />
     </div>
+  );
+};
+
+export const App: React.FC = () => {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
   );
 };
 
