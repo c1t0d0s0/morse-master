@@ -140,25 +140,25 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto space-y-3 sm:space-y-4">
       {/* Header */}
-      <div className="bg-slate-900/90 p-5 rounded-2xl border border-slate-800 backdrop-blur shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-slate-900/90 p-3.5 sm:p-4 rounded-2xl border border-slate-800 backdrop-blur shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
         <div>
-          <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
-            <Radio size={22} className="text-cyan-400" />
+          <h2 className="text-lg sm:text-xl font-bold text-slate-100 flex items-center gap-2">
+            <Radio size={20} className="text-cyan-400" />
             フリー電信機 (Free Morse Keyer)
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-400 mt-0.5">
             好きなリズムで打鍵すると、自動的にモールス信号を認識してテキストに解読します。
           </p>
         </div>
 
         {/* Mode Selector */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 bg-slate-950/60 p-1 rounded-xl border border-slate-800">
+          <div className="flex items-center gap-1 bg-slate-950/60 p-0.5 rounded-xl border border-slate-800">
             <button
               onClick={() => setIsWabun(false)}
-              className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
                 !isWabun ? 'bg-cyan-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -166,7 +166,7 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
             </button>
             <button
               onClick={() => setIsWabun(true)}
-              className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
                 isWabun ? 'bg-cyan-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -174,10 +174,10 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
             </button>
           </div>
 
-          <div className="flex items-center gap-1 bg-slate-950/60 p-1 rounded-xl border border-slate-800">
+          <div className="flex items-center gap-1 bg-slate-950/60 p-0.5 rounded-xl border border-slate-800">
             <button
               onClick={() => setKeyingMode('paddle')}
-              className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
                 keyingMode === 'paddle' ? 'bg-blue-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -185,7 +185,7 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
             </button>
             <button
               onClick={() => setKeyingMode('straight')}
-              className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
                 keyingMode === 'straight' ? 'bg-blue-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -196,7 +196,7 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
       </div>
 
       {/* Main Keyer Board */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 backdrop-blur shadow-2xl space-y-6">
+      <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-4 sm:p-5 backdrop-blur shadow-2xl space-y-3">
         {/* Signal & Visualizer */}
         <MorseVisualizer
           isActive={isPressing}
@@ -207,82 +207,82 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
         />
 
         {/* Live Decoded Output Screen (Fixed height layout) */}
-        <div className="bg-slate-950/90 rounded-2xl p-4 border border-slate-800 space-y-2.5">
+        <div className="bg-slate-950/90 rounded-2xl p-3 border border-slate-800 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs uppercase font-mono tracking-widest text-slate-400">
+            <span className="text-[10px] uppercase font-mono tracking-widest text-slate-400">
               解読されたメッセージ (DECODED MESSAGE)
             </span>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <button
                 onClick={copyText}
                 disabled={!decodedMessage}
                 className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-750 disabled:opacity-40 text-slate-300 hover:text-white text-xs font-semibold transition"
               >
-                {copied ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
-                <span>{copied ? 'コピー完了' : 'コピー'}</span>
+                {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+                <span>{copied ? '完了' : 'コピー'}</span>
               </button>
               <button
                 onClick={handleClear}
                 disabled={!decodedMessage && !currentMorseBuffer}
                 className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-750 disabled:opacity-40 text-slate-300 hover:text-rose-400 text-xs font-semibold transition"
               >
-                <Trash2 size={13} />
+                <Trash2 size={12} />
                 <span>クリア</span>
               </button>
             </div>
           </div>
 
           {/* Text Output Box with fixed height */}
-          <div className="h-14 flex items-center bg-slate-900/60 rounded-xl px-4 border border-slate-800/80 overflow-x-auto no-scrollbar">
-            <div className="text-xl sm:text-2xl font-black text-white tracking-wider flex items-center gap-1 whitespace-nowrap">
+          <div className="h-12 flex items-center bg-slate-900/60 rounded-xl px-3.5 border border-slate-800/80 overflow-x-auto no-scrollbar">
+            <div className="text-lg sm:text-xl font-black text-white tracking-wider flex items-center gap-1 whitespace-nowrap">
               <span>{decodedMessage}</span>
               {currentMorseBuffer && (
-                <span className="text-amber-400 font-mono text-lg sm:text-xl bg-amber-950/60 px-2 py-0.5 rounded border border-amber-800/50 animate-pulse">
+                <span className="text-amber-400 font-mono text-base sm:text-lg bg-amber-950/60 px-2 py-0.5 rounded border border-amber-800/50 animate-pulse">
                   {morseToDotsAndDashes(currentMorseBuffer)}
                 </span>
               )}
-              <span className="inline-block w-2 h-5 bg-cyan-400 animate-pulse ml-0.5 shrink-0" />
+              <span className="inline-block w-2 h-4 bg-cyan-400 animate-pulse ml-0.5 shrink-0" />
             </div>
           </div>
 
           {/* History of Morse Tokens (Fixed height slot) */}
-          <div className="h-6 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          <div className="h-5 flex items-center gap-1 overflow-x-auto no-scrollbar">
             {morseHistory.length > 0 ? (
               morseHistory.map((code, idx) => (
                 <span
                   key={idx}
-                  className="text-[11px] font-mono bg-slate-900 px-2 py-0.5 rounded text-cyan-400 border border-slate-800 shrink-0"
+                  className="text-[10px] font-mono bg-slate-900 px-1.5 py-0.5 rounded text-cyan-400 border border-slate-800 shrink-0"
                 >
                   {morseToDotsAndDashes(code)}
                 </span>
               ))
             ) : (
-              <span className="text-[11px] text-slate-600 font-mono">符号履歴がここに表示されます</span>
+              <span className="text-[10px] text-slate-600 font-mono">符号履歴がここに表示されます</span>
             )}
           </div>
         </div>
 
         {/* Keying Controller */}
         {keyingMode === 'paddle' ? (
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
               onPointerDown={() => handlePaddleInput('.')}
-              className="h-32 bg-gradient-to-b from-slate-800 to-slate-900 active:from-cyan-600 active:to-cyan-700 active:scale-95 text-slate-100 rounded-3xl border-2 border-slate-700 active:border-cyan-400 shadow-xl flex flex-col items-center justify-center gap-1 transition-all select-none touch-manipulation cursor-pointer"
+              className="h-20 sm:h-24 bg-gradient-to-b from-slate-800 to-slate-900 active:from-cyan-600 active:to-cyan-700 active:scale-95 text-slate-100 rounded-2xl border-2 border-slate-700 active:border-cyan-400 shadow-xl flex flex-col items-center justify-center gap-0.5 transition-all select-none touch-manipulation cursor-pointer"
             >
-              <div className="w-6 h-6 rounded-full bg-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.9)]" />
-              <span className="text-xl font-black">短点 ( ・ )</span>
-              <span className="text-xs font-mono text-slate-400">キー [ J ]</span>
+              <div className="w-5 h-5 rounded-full bg-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.9)]" />
+              <span className="text-lg font-black">短点 ( ・ )</span>
+              <span className="text-[10px] font-mono text-slate-400">キー [ J ]</span>
             </button>
 
             <button
               type="button"
               onPointerDown={() => handlePaddleInput('-')}
-              className="h-32 bg-gradient-to-b from-slate-800 to-slate-900 active:from-blue-600 active:to-blue-700 active:scale-95 text-slate-100 rounded-3xl border-2 border-slate-700 active:border-blue-400 shadow-xl flex flex-col items-center justify-center gap-1 transition-all select-none touch-manipulation cursor-pointer"
+              className="h-20 sm:h-24 bg-gradient-to-b from-slate-800 to-slate-900 active:from-blue-600 active:to-blue-700 active:scale-95 text-slate-100 rounded-2xl border-2 border-slate-700 active:border-blue-400 shadow-xl flex flex-col items-center justify-center gap-0.5 transition-all select-none touch-manipulation cursor-pointer"
             >
-              <div className="w-14 h-5 rounded-full bg-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.9)]" />
-              <span className="text-xl font-black">長点 ( － )</span>
-              <span className="text-xs font-mono text-slate-400">キー [ K ]</span>
+              <div className="w-12 h-3.5 rounded-full bg-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.9)]" />
+              <span className="text-lg font-black">長点 ( － )</span>
+              <span className="text-[10px] font-mono text-slate-400">キー [ K ]</span>
             </button>
           </div>
         ) : (
@@ -292,17 +292,17 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
               onPointerDown={handleStraightDown}
               onPointerUp={handleStraightUp}
               onPointerLeave={handleStraightUp}
-              className={`w-full h-40 rounded-3xl border-2 shadow-2xl flex flex-col items-center justify-center gap-2 transition-all select-none touch-manipulation cursor-pointer ${
+              className={`w-full h-24 sm:h-28 rounded-2xl border-2 shadow-xl flex flex-col items-center justify-center gap-1 transition-all select-none touch-manipulation cursor-pointer ${
                 isPressing
-                  ? 'bg-amber-500 border-amber-300 scale-95 shadow-[0_0_35px_rgba(245,158,11,0.9)]'
+                  ? 'bg-amber-500 border-amber-300 scale-95 shadow-[0_0_25px_rgba(245,158,11,0.9)]'
                   : 'bg-gradient-to-b from-slate-800 to-slate-900 border-slate-700 hover:border-slate-600'
               }`}
             >
-              <div className={`w-10 h-10 rounded-full border-4 ${isPressing ? 'bg-white border-amber-200' : 'bg-slate-700 border-slate-600'}`} />
-              <span className="text-2xl font-black text-white">
+              <div className={`w-7 h-7 rounded-full border-2 ${isPressing ? 'bg-white border-amber-200' : 'bg-slate-700 border-slate-600'}`} />
+              <span className="text-lg font-black text-white">
                 {isPressing ? '電信発信中 (TRANSMITTING)' : '電鍵をタップ / 長押し'}
               </span>
-              <span className="text-xs text-slate-400 font-mono">PCキー: [ Space ] または画面タップ</span>
+              <span className="text-[10px] text-slate-400 font-mono">PCキー: [ Space ] または画面タップ</span>
             </button>
           </div>
         )}

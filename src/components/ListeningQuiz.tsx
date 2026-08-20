@@ -120,23 +120,23 @@ export const ListeningQuiz: React.FC<ListeningQuizProps> = ({ settings }) => {
   const currentDetails = currentWord ? textToMorse(currentWord.text, currentWord.category === 'wabun') : null;
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto space-y-3 sm:space-y-4">
       {/* Quiz Controls Header: Charset & Level */}
-      <div className="bg-slate-900/90 p-4 sm:p-5 rounded-2xl border border-slate-800 backdrop-blur shadow-md">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-slate-900/90 p-3 sm:p-4 rounded-2xl border border-slate-800 backdrop-blur shadow-md">
+        <div className="flex flex-wrap items-center justify-between gap-2.5">
           {/* Charset Selector */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+          <div className="flex items-center gap-1 overflow-x-auto pb-0.5 sm:pb-0">
             <span className="text-xs font-semibold text-slate-400 mr-1">対象:</span>
             {[
               { id: 'all', label: 'すべて' },
-              { id: 'alphabet', label: '欧文 (A-Z)' },
-              { id: 'number', label: '数字 (0-9)' },
-              { id: 'wabun', label: '和文 (カナ)' },
+              { id: 'alphabet', label: '欧文' },
+              { id: 'number', label: '数字' },
+              { id: 'wabun', label: '和文' },
             ].map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setCharset(tab.id as TargetCharset)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition whitespace-nowrap ${
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition whitespace-nowrap ${
                   charset === tab.id
                     ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
                     : 'bg-slate-800 text-slate-400 hover:text-slate-200'
@@ -148,17 +148,17 @@ export const ListeningQuiz: React.FC<ListeningQuizProps> = ({ settings }) => {
           </div>
 
           {/* Difficulty Level Selector */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1">
             <span className="text-xs font-semibold text-slate-400 mr-1">難易度:</span>
             {[
-              { id: 'beginner', label: '初級 (1文字)' },
-              { id: 'intermediate', label: '中級 (単語)' },
-              { id: 'advanced', label: '上級 (長文)' },
+              { id: 'beginner', label: '初級' },
+              { id: 'intermediate', label: '中級' },
+              { id: 'advanced', label: '上級' },
             ].map(l => (
               <button
                 key={l.id}
                 onClick={() => setLevel(l.id as DifficultyLevel)}
-                className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold transition ${
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
                   level === l.id
                     ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
                     : 'bg-slate-800 text-slate-400 hover:text-slate-200'
@@ -171,22 +171,22 @@ export const ListeningQuiz: React.FC<ListeningQuizProps> = ({ settings }) => {
         </div>
 
         {/* Stats bar */}
-        <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-          <div className="flex items-center gap-4">
-            <span>スコア: <strong className="text-cyan-400 font-mono text-sm">{score}</strong></span>
-            <span>連続正解: <strong className="text-amber-400 font-mono text-sm">{streak}</strong> 🔥</span>
+        <div className="mt-2.5 pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+          <div className="flex items-center gap-3">
+            <span>スコア: <strong className="text-cyan-400 font-mono">{score}</strong></span>
+            <span>連続正解: <strong className="text-amber-400 font-mono">{streak}</strong> 🔥</span>
             <span>回答数: <strong className="text-slate-200 font-mono">{totalAnswered}</strong></span>
           </div>
-          <div className="text-slate-500 font-mono">
+          <div className="text-slate-500 font-mono text-[11px]">
             {settings.visualOnly ? '消音モード' : `${settings.wpm} WPM`}
           </div>
         </div>
       </div>
 
       {/* Main Quiz Board */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 backdrop-blur shadow-2xl relative overflow-hidden">
+      <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-4 sm:p-6 backdrop-blur shadow-2xl relative overflow-hidden">
         {/* Signal Visualizer & LED */}
-        <div className="mb-6">
+        <div className="mb-3">
           <MorseVisualizer
             isActive={activeSymbol !== null}
             currentSymbol={activeSymbol}
@@ -197,17 +197,17 @@ export const ListeningQuiz: React.FC<ListeningQuizProps> = ({ settings }) => {
         </div>
 
         {/* Playback Controls */}
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-4">
           <button
             onClick={() => playAudio(morseCode, currentWord?.text, 1.0)}
             disabled={isPlaying}
-            className={`flex items-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-sm sm:text-base shadow-lg transition-all ${
+            className={`flex items-center gap-1.5 px-5 py-2.5 rounded-xl font-bold text-sm sm:text-base shadow-lg transition-all ${
               isPlaying
                 ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 animate-pulse cursor-not-allowed'
                 : 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-cyan-500/20 hover:scale-105'
             }`}
           >
-            <Play size={18} fill={isPlaying ? 'none' : 'currentColor'} />
+            <Play size={16} fill={isPlaying ? 'none' : 'currentColor'} />
             {isPlaying ? '再生中...' : hasPlayed ? 'もう一度聴く' : '音声を再生'}
           </button>
 
@@ -215,30 +215,30 @@ export const ListeningQuiz: React.FC<ListeningQuizProps> = ({ settings }) => {
           <button
             onClick={() => playAudio(morseCode, currentWord?.text, 0.7)}
             disabled={isPlaying}
-            className="flex items-center gap-1.5 px-4 py-3 rounded-2xl font-semibold text-xs sm:text-sm bg-slate-800/80 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white transition disabled:opacity-50"
+            className="flex items-center gap-1 px-3 py-2.5 rounded-xl font-semibold text-xs sm:text-sm bg-slate-800/80 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white transition disabled:opacity-50"
             title="速度を0.7倍にして再生"
           >
-            <Snail size={16} className="text-amber-400" />
+            <Snail size={14} className="text-amber-400" />
             ゆっくり (0.7x)
           </button>
 
-          {/* Toggle Visual Dots/Dashes Display (消音時や初心者向けヒント) */}
+          {/* Toggle Visual Dots/Dashes Display */}
           <button
             onClick={() => setShowVisualSymbol(!showVisualSymbol)}
-            className={`flex items-center gap-1.5 px-4 py-3 rounded-2xl font-semibold text-xs sm:text-sm border transition ${
+            className={`flex items-center gap-1 px-3 py-2.5 rounded-xl font-semibold text-xs sm:text-sm border transition ${
               showVisualSymbol
                 ? 'bg-amber-500/20 border-amber-500/40 text-amber-300'
                 : 'bg-slate-800/80 border-slate-700 text-slate-400 hover:text-slate-200'
             }`}
             title="音が出せない場合やヒント用の「・－」記号表示"
           >
-            {showVisualSymbol ? <EyeOff size={16} /> : <Eye size={16} />}
+            {showVisualSymbol ? <EyeOff size={14} /> : <Eye size={14} />}
             {showVisualSymbol ? '記号を隠す' : '記号で見る (・－)'}
           </button>
         </div>
 
         {/* Input Form */}
-        <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-4">
+        <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-3">
           <div className="relative">
             <input
               ref={inputRef}
@@ -247,7 +247,7 @@ export const ListeningQuiz: React.FC<ListeningQuizProps> = ({ settings }) => {
               onChange={e => setUserInput(e.target.value)}
               disabled={isAnswered}
               placeholder={currentWord?.category === 'wabun' ? 'カタカナまたは文字を入力...' : '文字または単語を入力...'}
-              className="w-full bg-slate-950/80 border-2 border-slate-700 focus:border-cyan-400 rounded-2xl px-5 py-4 text-center text-xl sm:text-2xl font-bold tracking-widest text-slate-100 placeholder-slate-600 focus:outline-none transition uppercase shadow-inner"
+              className="w-full bg-slate-950/80 border-2 border-slate-700 focus:border-cyan-400 rounded-xl px-4 py-2.5 text-center text-lg sm:text-xl font-bold tracking-widest text-slate-100 placeholder-slate-600 focus:outline-none transition uppercase shadow-inner"
               autoComplete="off"
               autoFocus
             />
@@ -257,7 +257,7 @@ export const ListeningQuiz: React.FC<ListeningQuizProps> = ({ settings }) => {
             <button
               type="submit"
               disabled={!userInput.trim()}
-              className="w-full py-3.5 bg-cyan-500 hover:bg-cyan-400 disabled:bg-slate-800 disabled:text-slate-600 text-slate-950 font-extrabold rounded-2xl shadow-lg transition text-base"
+              className="w-full py-2.5 bg-cyan-500 hover:bg-cyan-400 disabled:bg-slate-800 disabled:text-slate-600 text-slate-950 font-extrabold rounded-xl shadow-lg transition text-sm sm:text-base"
             >
               回答する (Enter)
             </button>
@@ -265,83 +265,83 @@ export const ListeningQuiz: React.FC<ListeningQuizProps> = ({ settings }) => {
             <button
               type="button"
               onClick={() => nextQuestion()}
-              className="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-extrabold rounded-2xl shadow-lg transition text-base flex items-center justify-center gap-2"
+              className="w-full py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-extrabold rounded-xl shadow-lg transition text-sm sm:text-base flex items-center justify-center gap-2"
               autoFocus
             >
-              <span>次の問題へ</span>
-              <ArrowRight size={18} />
+              <span>次の問題へ進む (Enter)</span>
+              <ArrowRight size={16} />
             </button>
           )}
         </form>
 
         {/* Answer Result & Breakdown */}
         {isAnswered && currentWord && currentDetails && (
-          <div className="mt-8 pt-6 border-t border-slate-800 animate-fadeIn">
+          <div className="mt-4 pt-3 border-t border-slate-800 animate-fadeIn">
             {/* Success / Error Banner */}
             <div
-              className={`p-4 rounded-2xl border flex items-center justify-between mb-6 ${
+              className={`p-3 rounded-xl border flex items-center justify-between mb-3 ${
                 isCorrect
                   ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-300'
                   : 'bg-rose-950/40 border-rose-500/50 text-rose-300'
               }`}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5">
                 {isCorrect ? (
-                  <CheckCircle2 size={28} className="text-emerald-400 shrink-0" />
+                  <CheckCircle2 size={24} className="text-emerald-400 shrink-0" />
                 ) : (
-                  <XCircle size={28} className="text-rose-400 shrink-0" />
+                  <XCircle size={24} className="text-rose-400 shrink-0" />
                 )}
                 <div>
-                  <div className="font-extrabold text-lg">
+                  <div className="font-extrabold text-base">
                     {isCorrect ? '正解！ Perfect!' : 'おしい！ 不正解'}
                   </div>
                   <div className="text-xs opacity-80">
-                    正解: <span className="font-bold text-white text-sm">{currentWord.text}</span>
+                    正解: <span className="font-bold text-white">{currentWord.text}</span>
                     {currentWord.meaningJa && ` (${currentWord.meaningJa})`}
                   </div>
                 </div>
               </div>
 
               {isCorrect && (
-                <div className="flex items-center gap-1 font-mono text-sm font-bold bg-emerald-900/60 px-3 py-1 rounded-xl border border-emerald-700">
-                  <Sparkles size={14} className="text-amber-300" />
+                <div className="flex items-center gap-1 font-mono text-xs font-bold bg-emerald-900/60 px-2.5 py-1 rounded-lg border border-emerald-700">
+                  <Sparkles size={12} className="text-amber-300" />
                   +{level === 'advanced' ? 30 : level === 'intermediate' ? 20 : 10} pts
                 </div>
               )}
             </div>
 
             {/* Character Breakdown & Mnemonics */}
-            <div className="bg-slate-950/60 p-4 rounded-2xl border border-slate-800">
-              <div className="text-xs font-semibold text-slate-400 mb-3 flex items-center gap-1.5">
-                <HelpCircle size={14} className="text-cyan-400" />
+            <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+              <div className="text-xs font-semibold text-slate-400 mb-2 flex items-center gap-1.5">
+                <HelpCircle size={13} className="text-cyan-400" />
                 符号の分解と覚え方:
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto">
                 {currentDetails.items.map((item, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center justify-between p-2.5 bg-slate-900/80 rounded-xl border border-slate-800"
+                    className="flex items-center justify-between p-2 bg-slate-900/80 rounded-lg border border-slate-800"
                   >
-                    <div className="flex items-center gap-2.5">
-                      <span className="w-8 h-8 rounded-lg bg-cyan-950 text-cyan-300 font-extrabold flex items-center justify-center border border-cyan-800 text-base">
+                    <div className="flex items-center gap-2">
+                      <span className="w-7 h-7 rounded-lg bg-cyan-950 text-cyan-300 font-extrabold flex items-center justify-center border border-cyan-800 text-sm">
                         {item.char}
                       </span>
                       <div>
-                        <div className="font-mono text-sm font-bold text-amber-300 tracking-wider">
+                        <div className="font-mono text-xs font-bold text-amber-300 tracking-wider">
                           {morseToDotsAndDashes(item.code)}
                         </div>
                         {item.mnemonic && (
-                          <div className="text-[11px] text-slate-400">{item.mnemonic}</div>
+                          <div className="text-[10px] text-slate-400">{item.mnemonic}</div>
                         )}
                       </div>
                     </div>
                     <button
                       onClick={() => playAudio(item.code, item.char)}
-                      className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-cyan-300 transition"
+                      className="p-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-cyan-300 transition"
                       title="この文字の音を聴く"
                     >
-                      <Volume2 size={15} />
+                      <Volume2 size={13} />
                     </button>
                   </div>
                 ))}
