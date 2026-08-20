@@ -13,7 +13,7 @@ interface ListeningQuizProps {
 }
 
 export const ListeningQuiz: React.FC<ListeningQuizProps> = ({ settings }) => {
-  const [charset, setCharset] = useState<TargetCharset>('all');
+  const [charset, setCharset] = useState<TargetCharset>('alphabet');
   const [level, setLevel] = useState<DifficultyLevel>('beginner');
   const [currentWord, setCurrentWord] = useState<QuizWord | null>(null);
   const [morseCode, setMorseCode] = useState<string>('');
@@ -22,6 +22,7 @@ export const ListeningQuiz: React.FC<ListeningQuizProps> = ({ settings }) => {
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
   const [showVisualSymbol, setShowVisualSymbol] = useState<boolean>(false); // 記号（・－）表示トグル
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [hasPlayed, setHasPlayed] = useState<boolean>(false);
   const [activeSymbol, setActiveSymbol] = useState<'.' | '-' | null>(null);
   const [streak, setStreak] = useState<number>(0);
   const [score, setScore] = useState<number>(0);
@@ -34,6 +35,7 @@ export const ListeningQuiz: React.FC<ListeningQuizProps> = ({ settings }) => {
     morseAudio.stopPlayback();
     setIsPlaying(false);
     setActiveSymbol(null);
+    setHasPlayed(false);
 
     const question = getRandomQuizItem(newCharset, newLevel);
     const converted = textToMorse(question.text, question.category === 'wabun');
@@ -44,9 +46,7 @@ export const ListeningQuiz: React.FC<ListeningQuizProps> = ({ settings }) => {
     setIsAnswered(false);
     setIsCorrect(false);
 
-    // 出題時に自動再生
     setTimeout(() => {
-      playAudio(converted.code, question.text);
       inputRef.current?.focus();
     }, 150);
   };
@@ -60,6 +60,7 @@ export const ListeningQuiz: React.FC<ListeningQuizProps> = ({ settings }) => {
   const playAudio = async (code = morseCode, text = currentWord?.text || '', customSpeedRatio = 1.0) => {
     if (!code) return;
     setIsPlaying(true);
+    setHasPlayed(true);
     const targetWpm = Math.max(5, Math.round(settings.wpm * customSpeedRatio));
 
     await morseAudio.playMorse(
@@ -207,7 +208,7 @@ export const ListeningQuiz: React.FC<ListeningQuizProps> = ({ settings }) => {
             }`}
           >
             <Play size={18} fill={isPlaying ? 'none' : 'currentColor'} />
-            {isPlaying ? '再生中...' : 'もう一度聴く'}
+            {isPlaying ? '再生中...' : hasPlayed ? 'もう一度聴く' : '音声を再生'}
           </button>
 
           {/* Slow Replay */}
