@@ -36,7 +36,7 @@ export const App: React.FC = () => {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-6 py-3 sm:py-4">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-2 sm:px-6 py-1.5 sm:py-4">
         {currentMode === 'listening' && (
           <ListeningQuiz
             settings={settings}
@@ -61,8 +61,8 @@ export const App: React.FC = () => {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="mt-auto border-t border-slate-900 bg-slate-950/80 py-3 text-slate-500 text-xs">
+      {/* Footer (Hidden on mobile) */}
+      <footer className="mt-auto border-t border-slate-900 bg-slate-950/80 py-3 text-slate-500 text-xs hidden sm:block">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Radio size={16} className="text-cyan-400" />

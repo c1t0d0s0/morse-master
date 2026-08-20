@@ -219,13 +219,13 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
     : '';
 
   return (
-    <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
+    <div className="max-w-4xl mx-auto space-y-1.5 sm:space-y-4">
       {/* Settings & Filter Header */}
-      <div className="bg-slate-900/90 p-3 sm:p-4 rounded-2xl border border-slate-800 backdrop-blur shadow-md">
-        <div className="flex flex-wrap items-center justify-between gap-2.5">
+      <div className="bg-slate-900/90 p-2 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-800 backdrop-blur shadow-md">
+        <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2.5">
           {/* Charset selector */}
           <div className="flex items-center gap-1 overflow-x-auto pb-0.5 sm:pb-0">
-            <span className="text-xs font-semibold text-slate-400 mr-1">対象:</span>
+            <span className="text-[11px] sm:text-xs font-semibold text-slate-400 mr-0.5 sm:mr-1">対象:</span>
             {[
               { id: 'all', label: 'すべて' },
               { id: 'alphabet', label: '欧文' },
@@ -235,7 +235,7 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
               <button
                 key={tab.id}
                 onClick={() => setCharset(tab.id as TargetCharset)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition whitespace-nowrap ${
+                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg text-[11px] sm:text-xs font-semibold transition whitespace-nowrap ${
                   charset === tab.id
                     ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
                     : 'bg-slate-800 text-slate-400 hover:text-slate-200'
@@ -248,7 +248,7 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
 
           {/* Difficulty Level Selector */}
           <div className="flex items-center gap-1">
-            <span className="text-xs font-semibold text-slate-400 mr-1">難易度:</span>
+            <span className="text-[11px] sm:text-xs font-semibold text-slate-400 mr-0.5 sm:mr-1">難易度:</span>
             {[
               { id: 'beginner', label: '初級' },
               { id: 'intermediate', label: '中級' },
@@ -257,7 +257,7 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
               <button
                 key={l.id}
                 onClick={() => setLevel(l.id as DifficultyLevel)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg text-[11px] sm:text-xs font-semibold transition ${
                   level === l.id
                     ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
                     : 'bg-slate-800 text-slate-400 hover:text-slate-200'
@@ -269,10 +269,10 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
           </div>
 
           {/* Keying Mode Toggle (Paddle vs Straight Key) */}
-          <div className="flex items-center gap-1 bg-slate-950/60 p-0.5 rounded-xl border border-slate-800">
+          <div className="flex items-center gap-0.5 bg-slate-950/60 p-0.5 rounded-lg sm:rounded-xl border border-slate-800">
             <button
               onClick={() => setKeyingMode('paddle')}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+              className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg text-[11px] sm:text-xs font-semibold transition ${
                 keyingMode === 'paddle'
                   ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
                   : 'text-slate-400 hover:text-slate-200'
@@ -283,7 +283,7 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
             </button>
             <button
               onClick={() => setKeyingMode('straight')}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+              className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg text-[11px] sm:text-xs font-semibold transition ${
                 keyingMode === 'straight'
                   ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
                   : 'text-slate-400 hover:text-slate-200'
@@ -296,47 +296,47 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
         </div>
 
         {/* Stats */}
-        <div className="mt-2.5 pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+        <div className="mt-1.5 pt-1.5 sm:mt-2.5 sm:pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] sm:text-xs text-slate-400">
           <div className="flex items-center gap-3">
             <span>スコア: <strong className="text-cyan-400 font-mono">{score}</strong></span>
             <span>連続正解: <strong className="text-amber-400 font-mono">{streak}</strong> 🔥</span>
           </div>
-          <div className="text-slate-500 text-[11px] hidden sm:block">
+          <div className="text-slate-500 text-[10px] sm:text-[11px] hidden sm:block">
             {keyingMode === 'paddle' ? 'PCキー: [J]=短点, [K]=長点, [Space]=次, [Enter]=判定' : 'PCキー: [Space]=電鍵長押し, [Enter]=判定'}
           </div>
         </div>
       </div>
 
       {/* Main Practice Board */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-4 sm:p-5 backdrop-blur shadow-2xl">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4 items-start">
-          {/* Left Column: Target & Visualizer */}
-          <div className="md:col-span-5 space-y-2.5">
+      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl sm:rounded-3xl p-2.5 sm:p-5 backdrop-blur shadow-2xl">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-2 sm:gap-4 items-start">
+          {/* Top / Left Column: Target & Visualizer (スマホでは横並び2分割で高さ圧縮) */}
+          <div className="md:col-span-5 grid grid-cols-2 md:grid-cols-1 gap-2">
             {/* Target Word / Character Prompt */}
-            <div className="bg-slate-950/80 rounded-2xl p-3 border border-slate-800 text-center flex flex-col items-center justify-center">
-              <span className="text-[10px] uppercase font-mono tracking-widest text-slate-400 block mb-1">
-                お題 (TARGET PROMPT)
+            <div className="bg-slate-950/80 rounded-xl sm:rounded-2xl p-2 sm:p-3 border border-slate-800 text-center flex flex-col items-center justify-center min-h-[72px] sm:min-h-0">
+              <span className="text-[9px] sm:text-[10px] uppercase font-mono tracking-widest text-slate-400 block">
+                お題 (TARGET)
               </span>
-              <div className="inline-block px-5 py-1 bg-gradient-to-b from-slate-900 to-slate-950 border border-cyan-500/40 rounded-2xl shadow-lg shadow-cyan-500/10">
-                <span className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-white to-blue-300 tracking-wider">
+              <div className="inline-block px-3 py-0.5 sm:px-5 sm:py-1 bg-gradient-to-b from-slate-900 to-slate-950 border border-cyan-500/40 rounded-xl sm:rounded-2xl shadow-md shadow-cyan-500/10 my-0.5">
+                <span className="text-2xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-white to-blue-300 tracking-wider">
                   {currentWord?.text}
                 </span>
               </div>
               {currentWord?.meaningJa && (
-                <div className="text-xs text-slate-400 mt-1">{currentWord.meaningJa}</div>
+                <div className="text-[10px] sm:text-xs text-slate-400 truncate max-w-full">{currentWord.meaningJa}</div>
               )}
 
               {/* Hint Toggle */}
-              <div className="mt-1.5">
+              <div className="mt-0.5">
                 <button
                   onClick={() => setShowHint(!showHint)}
-                  className="inline-flex items-center gap-1 text-[11px] text-amber-400 hover:text-amber-300 bg-amber-950/40 px-2.5 py-0.5 rounded-full border border-amber-800/60 transition"
+                  className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] text-amber-400 hover:text-amber-300 bg-amber-950/40 px-2 py-0.2 rounded-full border border-amber-800/60 transition"
                 >
-                  <HelpCircle size={12} />
-                  {showHint ? 'ヒントを隠す' : '符号ヒント'}
+                  <HelpCircle size={10} />
+                  {showHint ? '隠す' : 'ヒント'}
                 </button>
                 {showHint && targetConverted && (
-                  <div className="mt-1 text-xs font-mono text-amber-300 font-bold tracking-widest animate-fadeIn">
+                  <div className="mt-0.5 text-[11px] sm:text-xs font-mono text-amber-300 font-bold tracking-widest animate-fadeIn">
                     {morseToDotsAndDashes(targetConverted.code)}
                   </div>
                 )}
@@ -354,29 +354,29 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
           </div>
 
           {/* Right Column: User Input, Keys, Actions & Results */}
-          <div className="md:col-span-7 space-y-2.5">
+          <div className="md:col-span-7 space-y-2 sm:space-y-2.5">
             {/* User Input Progress Display */}
-            <div className="px-3 py-2 bg-slate-950/80 rounded-2xl border border-slate-800 h-14 flex flex-col justify-center items-center overflow-hidden">
-              <div className="flex items-center gap-1.5 overflow-x-auto max-w-full no-scrollbar justify-center">
+            <div className="px-2 sm:px-3 py-1 sm:py-2 bg-slate-950/80 rounded-xl sm:rounded-2xl border border-slate-800 h-10 sm:h-14 flex flex-col justify-center items-center overflow-hidden">
+              <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto max-w-full no-scrollbar justify-center">
                 {/* Committed characters */}
                 {committedChars.map((char, idx) => (
-                  <div key={idx} className="flex items-center gap-1 bg-slate-900 px-2 py-0.5 rounded-lg border border-slate-700 shrink-0">
-                    <span className="text-sm font-bold text-white leading-none">{char}</span>
-                    <span className="font-mono text-[10px] text-cyan-400 leading-none">{morseToDotsAndDashes(committedCodes[idx])}</span>
+                  <div key={idx} className="flex items-center gap-1 bg-slate-900 px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded-md sm:rounded-lg border border-slate-700 shrink-0">
+                    <span className="text-xs sm:text-sm font-bold text-white leading-none">{char}</span>
+                    <span className="font-mono text-[9px] sm:text-[10px] text-cyan-400 leading-none">{morseToDotsAndDashes(committedCodes[idx])}</span>
                   </div>
                 ))}
 
                 {/* Currently typing character buffer */}
                 {currentCharBuffer && (
-                  <div className="flex items-center gap-1 bg-cyan-950/60 px-2 py-0.5 rounded-lg border-2 border-cyan-400 animate-pulse shrink-0">
-                    <span className="text-sm font-bold text-cyan-300 leading-none">{currentPreviewChar || '?'}</span>
-                    <span className="font-mono text-[10px] text-amber-300 leading-none">{morseToDotsAndDashes(currentCharBuffer)}</span>
+                  <div className="flex items-center gap-1 bg-cyan-950/60 px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded-md sm:rounded-lg border-2 border-cyan-400 animate-pulse shrink-0">
+                    <span className="text-xs sm:text-sm font-bold text-cyan-300 leading-none">{currentPreviewChar || '?'}</span>
+                    <span className="font-mono text-[9px] sm:text-[10px] text-amber-300 leading-none">{morseToDotsAndDashes(currentCharBuffer)}</span>
                   </div>
                 )}
 
                 {!currentCharBuffer && committedChars.length === 0 && (
-                  <span className="text-slate-600 text-xs italic whitespace-nowrap">
-                    {keyingMode === 'paddle' ? '下の「短点」「長点」ボタンで入力' : '下の電鍵ボタンを押して打鍵'}
+                  <span className="text-slate-600 text-[11px] sm:text-xs italic whitespace-nowrap">
+                    {keyingMode === 'paddle' ? '下のボタンをタップして送信' : '下の電鍵を押して打鍵'}
                   </span>
                 )}
               </div>
@@ -384,30 +384,30 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
 
             {/* Tapping Keypad (Paddle vs Straight Key) */}
             {!isAnswered ? (
-              <div className="space-y-2">
+              <div className="space-y-1.5 sm:space-y-2">
                 {keyingMode === 'paddle' ? (
                   /* Paddle Dual Keys */
-                  <div className="grid grid-cols-2 gap-2.5">
+                  <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
                     {/* Dot (短点) Button */}
                     <button
                       type="button"
                       onPointerDown={() => handleInputSymbol('.')}
-                      className="h-20 sm:h-22 bg-gradient-to-b from-slate-800 to-slate-900 active:from-cyan-600 active:to-cyan-700 active:scale-95 text-slate-100 hover:text-white rounded-2xl border-2 border-slate-700 active:border-cyan-400 shadow-lg flex flex-col items-center justify-center gap-0.5 transition-all select-none touch-manipulation cursor-pointer"
+                      className="h-16 sm:h-22 bg-gradient-to-b from-slate-800 to-slate-900 active:from-cyan-600 active:to-cyan-700 active:scale-95 text-slate-100 hover:text-white rounded-xl sm:rounded-2xl border-2 border-slate-700 active:border-cyan-400 shadow-md sm:shadow-lg flex flex-col items-center justify-center gap-0.5 transition-all select-none touch-manipulation cursor-pointer"
                     >
-                      <div className="w-4 h-4 rounded-full bg-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.8)]" />
-                      <span className="text-base sm:text-lg font-black">短点 ( ・ )</span>
-                      <span className="text-[10px] font-mono text-slate-400">キー [ J ]</span>
+                      <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
+                      <span className="text-sm sm:text-lg font-black">短点 ( ・ )</span>
+                      <span className="text-[9px] sm:text-[10px] font-mono text-slate-400 hidden sm:inline">キー [ J ]</span>
                     </button>
 
                     {/* Dash (長点) Button */}
                     <button
                       type="button"
                       onPointerDown={() => handleInputSymbol('-')}
-                      className="h-20 sm:h-22 bg-gradient-to-b from-slate-800 to-slate-900 active:from-blue-600 active:to-blue-700 active:scale-95 text-slate-100 hover:text-white rounded-2xl border-2 border-slate-700 active:border-blue-400 shadow-lg flex flex-col items-center justify-center gap-0.5 transition-all select-none touch-manipulation cursor-pointer"
+                      className="h-16 sm:h-22 bg-gradient-to-b from-slate-800 to-slate-900 active:from-blue-600 active:to-blue-700 active:scale-95 text-slate-100 hover:text-white rounded-xl sm:rounded-2xl border-2 border-slate-700 active:border-blue-400 shadow-md sm:shadow-lg flex flex-col items-center justify-center gap-0.5 transition-all select-none touch-manipulation cursor-pointer"
                     >
-                      <div className="w-10 h-3 rounded-full bg-blue-400 shadow-[0_0_12px_rgba(59,130,246,0.8)]" />
-                      <span className="text-base sm:text-lg font-black">長点 ( － )</span>
-                      <span className="text-[10px] font-mono text-slate-400">キー [ K ]</span>
+                      <div className="w-8 h-2.5 sm:w-10 sm:h-3 rounded-full bg-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.8)]" />
+                      <span className="text-sm sm:text-lg font-black">長点 ( － )</span>
+                      <span className="text-[9px] sm:text-[10px] font-mono text-slate-400 hidden sm:inline">キー [ K ]</span>
                     </button>
                   </div>
                 ) : (
@@ -418,43 +418,42 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
                       onPointerDown={handleStraightKeyDown}
                       onPointerUp={handleStraightKeyUp}
                       onPointerLeave={handleStraightKeyUp}
-                      className={`w-full h-24 sm:h-28 rounded-2xl border-2 shadow-xl flex flex-col items-center justify-center gap-1 transition-all select-none touch-manipulation cursor-pointer ${
+                      className={`w-full h-20 sm:h-28 rounded-xl sm:rounded-2xl border-2 shadow-lg sm:shadow-xl flex flex-col items-center justify-center gap-0.5 sm:gap-1 transition-all select-none touch-manipulation cursor-pointer ${
                         activeSignal
                           ? 'bg-amber-500 border-amber-300 scale-95 shadow-[0_0_25px_rgba(245,158,11,0.8)]'
                           : 'bg-gradient-to-b from-slate-800 to-slate-900 border-slate-700 hover:border-slate-600'
                       }`}
                     >
-                      <div className={`w-6 h-6 rounded-full border-2 ${activeSignal ? 'bg-white border-amber-200' : 'bg-slate-700 border-slate-600'}`} />
-                      <span className="text-base sm:text-lg font-black text-white">
+                      <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 ${activeSignal ? 'bg-white border-amber-200' : 'bg-slate-700 border-slate-600'}`} />
+                      <span className="text-sm sm:text-lg font-black text-white">
                         {activeSignal ? '電波送信中...' : '電鍵をタップ / 長押し'}
                       </span>
-                      <span className="text-[11px] text-slate-400">短押し=短点 (・) / 長押し=長点 (－)</span>
+                      <span className="text-[10px] sm:text-[11px] text-slate-400">短押し=短点 (・) / 長押し=長点 (－)</span>
                     </button>
                   </div>
                 )}
 
                 {/* Utility Controls & Submit */}
-                <div className="grid grid-cols-4 gap-1.5">
+                <div className="grid grid-cols-4 gap-1 sm:gap-1.5">
                   <button
                     type="button"
                     onClick={commitCurrentChar}
                     disabled={!currentCharBuffer}
-                    className="py-2.5 px-1.5 bg-slate-800 hover:bg-slate-750 disabled:opacity-40 text-slate-200 text-xs font-bold rounded-xl border border-slate-700 flex items-center justify-center gap-1 transition"
+                    className="py-2 sm:py-2.5 px-1 bg-slate-800 hover:bg-slate-750 disabled:opacity-40 text-slate-200 text-[11px] sm:text-xs font-bold rounded-lg sm:rounded-xl border border-slate-700 flex items-center justify-center gap-0.5 transition"
                     title="現在の文字を確定して次の文字へ"
                   >
-                    <CornerDownLeft size={14} />
-                    <span className="hidden sm:inline">次文字</span>
-                    <span className="text-[10px] opacity-75">(Space)</span>
+                    <CornerDownLeft size={13} />
+                    <span>次文字</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={handleBackspace}
                     disabled={!currentCharBuffer && committedChars.length === 0}
-                    className="py-2.5 px-1.5 bg-slate-800 hover:bg-slate-750 disabled:opacity-40 text-slate-200 text-xs font-bold rounded-xl border border-slate-700 flex items-center justify-center gap-1 transition"
+                    className="py-2 sm:py-2.5 px-1 bg-slate-800 hover:bg-slate-750 disabled:opacity-40 text-slate-200 text-[11px] sm:text-xs font-bold rounded-lg sm:rounded-xl border border-slate-700 flex items-center justify-center gap-0.5 transition"
                     title="直前の入力を1つ削除"
                   >
-                    <Delete size={14} />
+                    <Delete size={13} />
                     <span>削除</span>
                   </button>
 
@@ -462,10 +461,10 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
                     type="button"
                     onClick={handleClear}
                     disabled={!currentCharBuffer && committedChars.length === 0}
-                    className="py-2.5 px-1.5 bg-slate-800 hover:bg-slate-750 disabled:opacity-40 text-slate-200 text-xs font-bold rounded-xl border border-slate-700 flex items-center justify-center gap-1 transition"
+                    className="py-2 sm:py-2.5 px-1 bg-slate-800 hover:bg-slate-750 disabled:opacity-40 text-slate-200 text-[11px] sm:text-xs font-bold rounded-lg sm:rounded-xl border border-slate-700 flex items-center justify-center gap-0.5 transition"
                     title="入力をすべてクリア"
                   >
-                    <RotateCcw size={14} />
+                    <RotateCcw size={13} />
                     <span>クリア</span>
                   </button>
 
@@ -473,7 +472,7 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
                     type="button"
                     onClick={handleSubmit}
                     disabled={!currentCharBuffer && committedChars.length === 0}
-                    className="py-2.5 px-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 disabled:opacity-40 text-slate-950 text-xs sm:text-sm font-black rounded-xl shadow-lg shadow-cyan-500/20 transition flex items-center justify-center gap-1"
+                    className="py-2 sm:py-2.5 px-1 sm:px-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 disabled:opacity-40 text-slate-950 text-xs sm:text-sm font-black rounded-lg sm:rounded-xl shadow-md sm:shadow-lg shadow-cyan-500/20 transition flex items-center justify-center gap-0.5"
                   >
                     <span>判定する</span>
                   </button>
@@ -484,10 +483,10 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
               <div>
                 <button
                   onClick={() => nextQuestion()}
-                  className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-extrabold rounded-2xl shadow-lg transition text-sm sm:text-base flex items-center justify-center gap-2"
+                  className="w-full py-2.5 sm:py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-extrabold rounded-xl sm:rounded-2xl shadow-lg transition text-sm sm:text-base flex items-center justify-center gap-2"
                   autoFocus
                 >
-                  <span>次の問題へ進む (Enter)</span>
+                  <span>次の問題へ進む</span>
                   <ArrowRight size={16} />
                 </button>
               </div>
@@ -497,7 +496,7 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
             {isAnswered && currentWord && targetConverted && (
               <div className="pt-1 animate-fadeIn">
                 <div
-                  className={`p-3 rounded-xl border flex items-center justify-between ${
+                  className={`p-2.5 sm:p-3 rounded-xl border flex items-center justify-between ${
                     isCorrect
                       ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-300'
                       : 'bg-rose-950/40 border-rose-500/50 text-rose-300'
@@ -505,22 +504,22 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
                 >
                   <div className="flex items-center gap-2">
                     {isCorrect ? (
-                      <CheckCircle2 size={20} className="text-emerald-400 shrink-0" />
+                      <CheckCircle2 size={18} className="text-emerald-400 shrink-0" />
                     ) : (
-                      <XCircle size={20} className="text-rose-400 shrink-0" />
+                      <XCircle size={18} className="text-rose-400 shrink-0" />
                     )}
                     <div>
-                      <div className="font-extrabold text-sm sm:text-base">
+                      <div className="font-extrabold text-xs sm:text-base">
                         {isCorrect ? '送信成功！ Accurate!' : '送信ミス！ Check Morse'}
                       </div>
-                      <div className="text-xs opacity-80">
+                      <div className="text-[11px] opacity-80">
                         目標: <span className="font-bold text-white">{currentWord.text}</span> ({morseToDotsAndDashes(targetConverted.code)})
                       </div>
                     </div>
                   </div>
 
                   {isCorrect && (
-                    <div className="font-mono text-xs font-bold bg-emerald-900/60 px-2.5 py-1 rounded-lg border border-emerald-700">
+                    <div className="font-mono text-[11px] sm:text-xs font-bold bg-emerald-900/60 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg border border-emerald-700">
                       +{level === 'advanced' ? 30 : level === 'intermediate' ? 20 : 10} pts
                     </div>
                   )}
