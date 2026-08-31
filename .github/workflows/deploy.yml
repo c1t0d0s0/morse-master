@@ -37,6 +37,8 @@ jobs:
         run: npm test
 
       - name: Build
+        env:
+          GTM_ID: ${{ vars.GTM_ID }}
         run: npm run build
 
       - name: Setup Pages

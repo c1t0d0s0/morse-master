@@ -1,19 +1,23 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
-import { extractGtmId, googleAnalyticsPlugin } from '../vite.config';
+import { extractGtmId, resolveGtmId, googleAnalyticsPlugin } from '../vite.config';
 
 describe('Google Analytics Config Tests', () => {
   const tempConfigDir = path.resolve(__dirname, '../temp_test');
   const tempConfigFile = path.join(tempConfigDir, 'config.js');
+  const originalEnv = { ...process.env };
 
   beforeEach(() => {
+    delete process.env.GTM_ID;
+    delete process.env.VITE_GTM_ID;
     if (!fs.existsSync(tempConfigDir)) {
       fs.mkdirSync(tempConfigDir, { recursive: true });
     }
   });
 
   afterEach(() => {
+    process.env = { ...originalEnv };
     if (fs.existsSync(tempConfigDir)) {
       fs.rmSync(tempConfigDir, { recursive: true, force: true });
     }
@@ -37,6 +41,35 @@ describe('Google Analytics Config Tests', () => {
     expect(extractGtmId('const OTHER_VAR = "something";')).toBeNull();
   });
 
+  it('should resolve GTM_ID from process.env.GTM_ID with priority', () => {
+    process.env.GTM_ID = 'G-ENV12345';
+    fs.writeFileSync(tempConfigFile, "const GTM_ID = 'G-FROMFILE';", 'utf-8');
+    expect(resolveGtmId(tempConfigFile)).toBe('G-ENV12345');
+  });
+
+  it('should resolve GTM_ID from process.env.VITE_GTM_ID if GTM_ID is not set', () => {
+    process.env.VITE_GTM_ID = 'G-VITEENV';
+    expect(resolveGtmId(tempConfigFile)).toBe('G-VITEENV');
+  });
+
+  it('should fallback to config.js when env vars are empty', () => {
+    process.env.GTM_ID = '   ';
+    fs.writeFileSync(tempConfigFile, "const GTM_ID = 'G-FROMFILE';", 'utf-8');
+    expect(resolveGtmId(tempConfigFile)).toBe('G-FROMFILE');
+  });
+
+  it('should inject Google Analytics tag when env GTM_ID is set', () => {
+    process.env.GTM_ID = 'G-ACTIONENV';
+    const plugin = googleAnalyticsPlugin(tempConfigFile);
+    const transform = plugin.transformIndexHtml as any;
+    const result = transform('<html><head></head><body></body></html>');
+
+    expect(Array.isArray(result)).toBe(true);
+    expect(result).toHaveLength(2);
+    expect(result[0].attrs.src).toBe('https://www.googletagmanager.com/gtag/js?id=G-ACTIONENV');
+    expect(result[1].children).toContain("gtag('config', 'G-ACTIONENV')");
+  });
+
   it('should inject Google Analytics tag when config.js exists', () => {
     fs.writeFileSync(tempConfigFile, "const GTM_ID = 'G-S6QX2XHT2D';", 'utf-8');
     const plugin = googleAnalyticsPlugin(tempConfigFile);
@@ -49,7 +82,7 @@ describe('Google Analytics Config Tests', () => {
     expect(result[1].children).toContain("gtag('config', 'G-S6QX2XHT2D')");
   });
 
-  it('should not inject tags when config.js does not exist', () => {
+  it('should not inject tags when config.js does not exist and env is not set', () => {
     const nonExistentPath = path.join(tempConfigDir, 'non_existent_config.js');
     const plugin = googleAnalyticsPlugin(nonExistentPath);
     const transform = plugin.transformIndexHtml as any;
@@ -59,7 +92,7 @@ describe('Google Analytics Config Tests', () => {
     expect(result).toBe(html);
   });
 
-  it('should not inject tags when config.js exists but has no GTM_ID', () => {
+  it('should not inject tags when config.js exists but has no GTM_ID and env is not set', () => {
     fs.writeFileSync(tempConfigFile, 'const OTHER = "123";', 'utf-8');
     const plugin = googleAnalyticsPlugin(tempConfigFile);
     const transform = plugin.transformIndexHtml as any;
@@ -69,3 +102,4 @@ describe('Google Analytics Config Tests', () => {
     expect(result).toBe(html);
   });
 });
+

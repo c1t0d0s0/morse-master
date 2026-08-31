@@ -9,6 +9,26 @@ export function extractGtmId(content: string): string | null {
   return match && match[1] ? match[1].trim() : null
 }
 
+export function resolveGtmId(configFilePath?: string): string | null {
+  if (process.env.GTM_ID && process.env.GTM_ID.trim()) {
+    return process.env.GTM_ID.trim()
+  }
+  if (process.env.VITE_GTM_ID && process.env.VITE_GTM_ID.trim()) {
+    return process.env.VITE_GTM_ID.trim()
+  }
+
+  const configPath = configFilePath || path.resolve(process.cwd(), 'config.js')
+  if (fs.existsSync(configPath)) {
+    try {
+      const content = fs.readFileSync(configPath, 'utf-8')
+      return extractGtmId(content)
+    } catch (error) {
+      console.warn('Failed to load GTM_ID from config.js:', error)
+    }
+  }
+  return null
+}
+
 export function googleAnalyticsPlugin(configFilePath?: string): Plugin {
   return {
     name: 'google-analytics-plugin',
@@ -17,30 +37,23 @@ export function googleAnalyticsPlugin(configFilePath?: string): Plugin {
       if (ctx?.server) {
         ctx.server.watcher.add(configPath)
       }
-      if (fs.existsSync(configPath)) {
-        try {
-          const content = fs.readFileSync(configPath, 'utf-8')
-          const gtmId = extractGtmId(content)
-          if (gtmId) {
-            return [
-              {
-                tag: 'script',
-                attrs: {
-                  async: true,
-                  src: `https://www.googletagmanager.com/gtag/js?id=${gtmId}`,
-                },
-                injectTo: 'head-prepend',
-              },
-              {
-                tag: 'script',
-                children: `window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', '${gtmId}');`,
-                injectTo: 'head-prepend',
-              },
-            ]
-          }
-        } catch (error) {
-          console.warn('Failed to load GTM_ID from config.js:', error)
-        }
+      const gtmId = resolveGtmId(configFilePath)
+      if (gtmId) {
+        return [
+          {
+            tag: 'script',
+            attrs: {
+              async: true,
+              src: `https://www.googletagmanager.com/gtag/js?id=${gtmId}`,
+            },
+            injectTo: 'head-prepend',
+          },
+          {
+            tag: 'script',
+            children: `window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', '${gtmId}');`,
+            injectTo: 'head-prepend',
+          },
+        ]
       }
       return html
     },
