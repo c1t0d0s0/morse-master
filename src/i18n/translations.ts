@@ -164,6 +164,9 @@ export const translations = {
       transmitting: '電信発信中 (TRANSMITTING)',
       straightIdle: '電鍵をタップ / 長押し',
       pcKeyHelp: 'PCキー: [ Space ] または画面タップ',
+      treeToggle: 'ツリー盤',
+      showTree: 'モールス・ツリー盤を表示',
+      hideTree: 'モールス・ツリー盤を隠す',
     },
 
     // Morse Tree Board
@@ -364,6 +367,9 @@ export const translations = {
       transmitting: 'TRANSMITTING',
       straightIdle: 'Tap or Hold Key',
       pcKeyHelp: 'PC Key: [ Space ] or tap screen',
+      treeToggle: 'Tree',
+      showTree: 'Show Morse tree board',
+      hideTree: 'Hide Morse tree board',
     },
 
     // Morse Tree Board

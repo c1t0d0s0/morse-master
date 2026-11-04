@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Radio, Trash2, Copy, Check } from 'lucide-react';
+import { Radio, Trash2, Copy, Check, Network } from 'lucide-react';
 import { morseAudio } from '../audio/morseAudioEngine';
 import { morseToText, morseToDotsAndDashes } from '../data/morseData';
 import { AudioEngineSettings, KeyingMode } from '../types';
@@ -10,6 +10,8 @@ import { useTranslation } from '../i18n/LanguageContext';
 interface FreeKeyerProps {
   settings: AudioEngineSettings;
 }
+
+const SHOW_TREE_STORAGE_KEY = 'morse-master:freeKeyer:showTree';
 
 export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
   const { t } = useTranslation();
@@ -25,6 +27,26 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
   const [copied, setCopied] = useState<boolean>(false);
   // ツリー盤用: 確定直後の文字を次の入力まで点灯させておく
   const [lastCommittedCode, setLastCommittedCode] = useState<string>('');
+  // ツリー盤の表示/非表示（ブラウザに記憶）
+  const [showTree, setShowTree] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(SHOW_TREE_STORAGE_KEY) !== 'false';
+    } catch {
+      return true;
+    }
+  });
+
+  const toggleTree = () => {
+    setShowTree(prev => {
+      const next = !prev;
+      try {
+        localStorage.setItem(SHOW_TREE_STORAGE_KEY, String(next));
+      } catch {
+        // ストレージが使えない環境では記憶しない
+      }
+      return next;
+    });
+  };
 
   const keyDownTimeRef = useRef<number | null>(null);
   const pauseTimerRef = useRef<number | null>(null);
@@ -163,7 +185,7 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
         </div>
 
         {/* Mode Selector */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-1 bg-slate-950/60 p-0.5 rounded-xl border border-slate-800">
             <button
               onClick={() => setIsWabun(false)}
@@ -201,6 +223,22 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
               {t.freeKeyer.modeStraight}
             </button>
           </div>
+
+          {!isWabun && (
+            <button
+              onClick={toggleTree}
+              aria-pressed={showTree}
+              title={showTree ? t.freeKeyer.hideTree : t.freeKeyer.showTree}
+              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold border transition ${
+                showTree
+                  ? 'bg-emerald-500/15 border-emerald-500/60 text-emerald-300'
+                  : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Network size={14} />
+              <span>{t.freeKeyer.treeToggle}</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -214,15 +252,6 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
           isVisualOnly={settings.visualOnly}
           showTextSymbol={true}
         />
-
-        {/* Morse Tree Board (Alphabet only) */}
-        {!isWabun && (
-          <MorseTreeBoard
-            code={currentMorseBuffer || lastCommittedCode}
-            committed={!currentMorseBuffer && Boolean(lastCommittedCode)}
-            isActive={isPressing}
-          />
-        )}
 
         {/* Live Decoded Output Screen (Fixed height layout) */}
         <div className="bg-slate-950/90 rounded-2xl p-3 border border-slate-800 space-y-2">
@@ -323,6 +352,16 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
               <span className="text-[10px] text-slate-400 font-mono">{t.freeKeyer.pcKeyHelp}</span>
             </button>
           </div>
+        )}
+
+        {/* Morse Tree Board (Alphabet only, toggleable) */}
+        {!isWabun && showTree && (
+          <MorseTreeBoard
+            code={currentMorseBuffer || lastCommittedCode}
+            committed={!currentMorseBuffer && Boolean(lastCommittedCode)}
+            isActive={isPressing}
+            className="pt-1"
+          />
         )}
       </div>
     </div>
