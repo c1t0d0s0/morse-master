@@ -166,6 +166,16 @@ export const translations = {
       pcKeyHelp: 'PCキー: [ Space ] または画面タップ',
     },
 
+    // Morse Tree Board
+    morseTree: {
+      title: 'モールス・ツリー',
+      current: '現在',
+      committed: '確定',
+      noMatch: '該当する英字なし',
+      idleHint: '打鍵すると現在位置の文字が光ります',
+      tapHint: '文字をタップすると再生します',
+    },
+
     // Settings Modal
     settingsModal: {
       title: '設定 (Settings)',
@@ -354,6 +364,16 @@ export const translations = {
       transmitting: 'TRANSMITTING',
       straightIdle: 'Tap or Hold Key',
       pcKeyHelp: 'PC Key: [ Space ] or tap screen',
+    },
+
+    // Morse Tree Board
+    morseTree: {
+      title: 'Morse Tree',
+      current: 'Now',
+      committed: 'Decoded',
+      noMatch: 'No matching letter',
+      idleHint: 'Key in to light up the current letter',
+      tapHint: 'Tap a letter to play it',
     },
 
     // Settings Modal

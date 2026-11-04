@@ -4,6 +4,7 @@ import { morseAudio } from '../audio/morseAudioEngine';
 import { morseToText, morseToDotsAndDashes } from '../data/morseData';
 import { AudioEngineSettings, KeyingMode } from '../types';
 import { MorseVisualizer } from './MorseVisualizer';
+import { MorseTreeBoard } from './MorseTreeBoard';
 import { useTranslation } from '../i18n/LanguageContext';
 
 interface FreeKeyerProps {
@@ -22,6 +23,8 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
   const [decodedMessage, setDecodedMessage] = useState<string>('');
   const [morseHistory, setMorseHistory] = useState<string[]>([]);
   const [copied, setCopied] = useState<boolean>(false);
+  // ツリー盤用: 確定直後の文字を次の入力まで点灯させておく
+  const [lastCommittedCode, setLastCommittedCode] = useState<string>('');
 
   const keyDownTimeRef = useRef<number | null>(null);
   const pauseTimerRef = useRef<number | null>(null);
@@ -39,6 +42,7 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
         const decodedChar = morseToText(currentBuffer, isWabun);
         setDecodedMessage(prev => prev + decodedChar);
         setMorseHistory(prev => [...prev, currentBuffer]);
+        setLastCommittedCode(currentBuffer);
         setCurrentMorseBuffer('');
       }
     }, dotDuration * 3.5);
@@ -46,6 +50,7 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
 
   // パドル入力
   const handlePaddleInput = (symbol: '.' | '-') => {
+    setLastCommittedCode('');
     setCurrentSymbol(symbol);
     setIsPressing(true);
     morseAudio.playSymbol(symbol);
@@ -68,6 +73,7 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
     if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
 
     keyDownTimeRef.current = Date.now();
+    setLastCommittedCode('');
     setIsPressing(true);
     morseAudio.startManualTone();
   };
@@ -133,6 +139,7 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
     setCurrentMorseBuffer('');
     setDecodedMessage('');
     setMorseHistory([]);
+    setLastCommittedCode('');
   };
 
   const copyText = () => {
@@ -207,6 +214,15 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
           isVisualOnly={settings.visualOnly}
           showTextSymbol={true}
         />
+
+        {/* Morse Tree Board (Alphabet only) */}
+        {!isWabun && (
+          <MorseTreeBoard
+            code={currentMorseBuffer || lastCommittedCode}
+            committed={!currentMorseBuffer && Boolean(lastCommittedCode)}
+            isActive={isPressing}
+          />
+        )}
 
         {/* Live Decoded Output Screen (Fixed height layout) */}
         <div className="bg-slate-950/90 rounded-2xl p-3 border border-slate-800 space-y-2">

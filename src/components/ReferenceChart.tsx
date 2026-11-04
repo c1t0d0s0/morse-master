@@ -4,6 +4,7 @@ import { ALPHABET_MORSE, NUMBER_MORSE, WABUN_MORSE, SYMBOL_MORSE, morseToDotsAnd
 import { MorseItem, MorseCategory, AudioEngineSettings } from '../types';
 import { morseAudio } from '../audio/morseAudioEngine';
 import { useTranslation } from '../i18n/LanguageContext';
+import { MorseTreeBoard } from './MorseTreeBoard';
 
 interface ReferenceChartProps {
   settings?: AudioEngineSettings;
@@ -14,6 +15,9 @@ export const ReferenceChart: React.FC<ReferenceChartProps> = () => {
   const [activeTab, setActiveTab] = useState<MorseCategory | 'all'>('alphabet');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [playingCode, setPlayingCode] = useState<string | null>(null);
+  // ツリー盤で点灯させる符号（再生に合わせて1符号ずつ進む）
+  const [treeCode, setTreeCode] = useState<string>('');
+  const [isTreeSignalOn, setIsTreeSignalOn] = useState<boolean>(false);
 
   const tabs: Array<{ id: MorseCategory | 'all'; label: string; count: number }> = [
     { id: 'alphabet', label: t.reference.tabAlphabet, count: ALPHABET_MORSE.length },
@@ -48,12 +52,23 @@ export const ReferenceChart: React.FC<ReferenceChartProps> = () => {
     );
   });
 
-  const playItemSound = async (item: MorseItem) => {
-    setPlayingCode(item.code);
-    await morseAudio.playMorse(item.code, {
-      onComplete: () => setPlayingCode(null),
+  const playCode = async (code: string) => {
+    setPlayingCode(code);
+    setTreeCode('');
+    await morseAudio.playMorse(code, {
+      onSymbolStart: ({ symbolIndex }) => {
+        setTreeCode(code.slice(0, symbolIndex + 1));
+        setIsTreeSignalOn(true);
+      },
+      onSymbolEnd: () => setIsTreeSignalOn(false),
+      onComplete: () => {
+        setPlayingCode(null);
+        setIsTreeSignalOn(false);
+      },
     });
   };
+
+  const playItemSound = (item: MorseItem) => playCode(item.code);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -101,6 +116,14 @@ export const ReferenceChart: React.FC<ReferenceChartProps> = () => {
           </button>
         ))}
       </div>
+
+      {/* Morse Tree Board (Alphabet tab only) */}
+      {activeTab === 'alphabet' && (
+        <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800">
+          <h3 className="text-sm font-bold text-slate-200 mb-2">{t.morseTree.title}</h3>
+          <MorseTreeBoard code={treeCode} isActive={isTreeSignalOn} onSelect={playCode} />
+        </div>
+      )}
 
       {/* Cards Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
