@@ -6,6 +6,7 @@ import { AudioEngineSettings, KeyingMode } from '../types';
 import { MorseVisualizer } from './MorseVisualizer';
 import { MorseTreeBoard } from './MorseTreeBoard';
 import { useTranslation } from '../i18n/LanguageContext';
+import { preventTouchSelection } from '../utils/preventTouchSelection';
 
 interface FreeKeyerProps {
   settings: AudioEngineSettings;
@@ -232,7 +233,7 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
         </button>
       </div>
     ) : (
-      <div className={`keyer-surface ${tall ? 'h-full' : ''}`} onContextMenu={preventContextMenu}>
+      <div ref={preventTouchSelection} className={`keyer-surface ${tall ? 'h-full' : ''}`} onContextMenu={preventContextMenu}>
         <button
           type="button"
           onPointerDown={handleStraightDown}

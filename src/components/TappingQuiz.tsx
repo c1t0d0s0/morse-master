@@ -7,6 +7,7 @@ import { textToMorse, morseToDotsAndDashes, morseToText } from '../data/morseDat
 import { morseAudio } from '../audio/morseAudioEngine';
 import { MorseVisualizer } from './MorseVisualizer';
 import { useTranslation } from '../i18n/LanguageContext';
+import { preventTouchSelection } from '../utils/preventTouchSelection';
 
 interface TappingQuizProps {
   settings: AudioEngineSettings;
@@ -416,7 +417,7 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
                   </div>
                 ) : (
                   /* Straight Key Button */
-                  <div className="keyer-surface" onContextMenu={(e) => e.preventDefault()}>
+                  <div ref={preventTouchSelection} className="keyer-surface" onContextMenu={(e) => e.preventDefault()}>
                     <button
                       type="button"
                       onPointerDown={handleStraightKeyDown}
