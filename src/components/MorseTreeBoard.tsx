@@ -20,6 +20,8 @@ interface MorseTreeBoardProps {
   /** ノードクリック時（早見表での再生用） */
   onSelect?: (code: string) => void;
   className?: string;
+  /** SVG 自体のサイズ指定（集中モードなどで上書き） */
+  svgClassName?: string;
 }
 
 // 格子座標 → SVG 座標
@@ -60,6 +62,7 @@ export const MorseTreeBoard: React.FC<MorseTreeBoardProps> = ({
   committed = false,
   onSelect,
   className = '',
+  svgClassName = 'w-full max-w-[360px] h-auto',
 }) => {
   const { t } = useTranslation();
   const path = getTreePath(code);
@@ -146,7 +149,7 @@ export const MorseTreeBoard: React.FC<MorseTreeBoardProps> = ({
     <div className={`w-full flex flex-col items-center gap-1.5 select-none ${className}`}>
       <svg
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
-        className="w-full max-w-[360px] h-auto"
+        className={svgClassName}
         role="img"
         aria-label={t.morseTree.title}
       >

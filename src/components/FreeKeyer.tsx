@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Radio, Trash2, Copy, Check, Network } from 'lucide-react';
+import { Radio, Trash2, Copy, Check, Network, Maximize2, X } from 'lucide-react';
 import { morseAudio } from '../audio/morseAudioEngine';
 import { morseToText, morseToDotsAndDashes } from '../data/morseData';
 import { AudioEngineSettings, KeyingMode } from '../types';
@@ -35,6 +35,25 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
       return true;
     }
   });
+
+  // 集中モード（スマホ向け全画面: 上にツリー、下に電鍵）
+  const [focusMode, setFocusMode] = useState<boolean>(false);
+
+  const enterFocusMode = () => {
+    // ツリーは欧文のみ対応
+    setIsWabun(false);
+    setFocusMode(true);
+  };
+
+  // 集中モード中は背景のスクロールを止める
+  useEffect(() => {
+    if (!focusMode) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [focusMode]);
 
   const toggleTree = () => {
     setShowTree(prev => {
@@ -170,6 +189,148 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // 解読テキスト1行（通常画面・集中モード共用）
+  const renderOutputLine = () => (
+    <div className="h-12 flex items-center bg-slate-900/60 rounded-xl px-3.5 border border-slate-800/80 overflow-x-auto no-scrollbar">
+      <div className="text-lg sm:text-xl font-black text-white tracking-wider flex items-center gap-1 whitespace-nowrap">
+        <span>{decodedMessage}</span>
+        {currentMorseBuffer && (
+          <span className="text-amber-400 font-mono text-base sm:text-lg bg-amber-950/60 px-2 py-0.5 rounded border border-amber-800/50 animate-pulse">
+            {morseToDotsAndDashes(currentMorseBuffer)}
+          </span>
+        )}
+        <span className="inline-block w-2 h-4 bg-cyan-400 animate-pulse ml-0.5 shrink-0" />
+      </div>
+    </div>
+  );
+
+  // 電鍵（tall=true で親の高さいっぱいに広げる）
+  const renderKeyingController = (tall: boolean) => (
+    keyingMode === 'paddle' ? (
+      <div className={`grid grid-cols-2 gap-3 ${tall ? 'h-full' : ''}`}>
+        <button
+          type="button"
+          onPointerDown={() => handlePaddleInput('.')}
+          className={`${tall ? 'h-full' : 'h-20 sm:h-24'} bg-gradient-to-b from-slate-800 to-slate-900 active:from-cyan-600 active:to-cyan-700 active:scale-95 text-slate-100 rounded-2xl border-2 border-slate-700 active:border-cyan-400 shadow-xl flex flex-col items-center justify-center gap-0.5 transition-all select-none touch-manipulation cursor-pointer`}
+        >
+          <div className="w-5 h-5 rounded-full bg-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.9)]" />
+          <span className="text-lg font-black">{t.freeKeyer.dotButton}</span>
+          <span className="text-[10px] font-mono text-slate-400">{t.freeKeyer.keyJ}</span>
+        </button>
+
+        <button
+          type="button"
+          onPointerDown={() => handlePaddleInput('-')}
+          className={`${tall ? 'h-full' : 'h-20 sm:h-24'} bg-gradient-to-b from-slate-800 to-slate-900 active:from-blue-600 active:to-blue-700 active:scale-95 text-slate-100 rounded-2xl border-2 border-slate-700 active:border-blue-400 shadow-xl flex flex-col items-center justify-center gap-0.5 transition-all select-none touch-manipulation cursor-pointer`}
+        >
+          <div className="w-12 h-3.5 rounded-full bg-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.9)]" />
+          <span className="text-lg font-black">{t.freeKeyer.dashButton}</span>
+          <span className="text-[10px] font-mono text-slate-400">{t.freeKeyer.keyK}</span>
+        </button>
+      </div>
+    ) : (
+      <div className={tall ? 'h-full' : undefined}>
+        <button
+          type="button"
+          onPointerDown={handleStraightDown}
+          onPointerUp={handleStraightUp}
+          onPointerLeave={handleStraightUp}
+          className={`w-full ${tall ? 'h-full' : 'h-24 sm:h-28'} rounded-2xl border-2 shadow-xl flex flex-col items-center justify-center gap-1 transition-all select-none touch-manipulation cursor-pointer ${
+            isPressing
+              ? 'bg-amber-500 border-amber-300 scale-95 shadow-[0_0_25px_rgba(245,158,11,0.9)]'
+              : 'bg-gradient-to-b from-slate-800 to-slate-900 border-slate-700 hover:border-slate-600'
+          }`}
+        >
+          <div className={`w-7 h-7 rounded-full border-2 ${isPressing ? 'bg-white border-amber-200' : 'bg-slate-700 border-slate-600'}`} />
+          <span className="text-lg font-black text-white">
+            {isPressing ? t.freeKeyer.transmitting : t.freeKeyer.straightIdle}
+          </span>
+          <span className="text-[10px] text-slate-400 font-mono">{t.freeKeyer.pcKeyHelp}</span>
+        </button>
+      </div>
+    )
+  );
+
+  const renderKeyingModeSelector = () => (
+    <div className="flex items-center gap-1 bg-slate-950/60 p-0.5 rounded-xl border border-slate-800">
+      <button
+        onClick={() => setKeyingMode('paddle')}
+        className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+          keyingMode === 'paddle' ? 'bg-blue-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
+        }`}
+      >
+        {t.freeKeyer.modePaddle}
+      </button>
+      <button
+        onClick={() => setKeyingMode('straight')}
+        className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+          keyingMode === 'straight' ? 'bg-blue-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
+        }`}
+      >
+        {t.freeKeyer.modeStraight}
+      </button>
+    </div>
+  );
+
+  const treeCode = currentMorseBuffer || lastCommittedCode;
+  const treeCommitted = !currentMorseBuffer && Boolean(lastCommittedCode);
+
+  if (focusMode) {
+    return (
+      <div
+        className="fixed inset-0 z-50 bg-slate-950 flex flex-col h-[100dvh] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]"
+        role="dialog"
+        aria-modal="true"
+        aria-label={t.freeKeyer.focusMode}
+      >
+        {/* 上部バー */}
+        <div className="flex items-center justify-between gap-2 pl-3 pr-1 py-1 shrink-0">
+          <div className="flex items-center gap-2">
+            {renderKeyingModeSelector()}
+            <button
+              onClick={handleClear}
+              disabled={!decodedMessage && !currentMorseBuffer}
+              aria-label={t.freeKeyer.clear}
+              title={t.freeKeyer.clear}
+              className="flex items-center justify-center w-9 h-9 rounded-lg bg-slate-900 border border-slate-800 disabled:opacity-40 text-slate-300 hover:text-rose-400 transition"
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
+          <button
+            onClick={() => setFocusMode(false)}
+            aria-label={t.freeKeyer.focusExit}
+            title={t.freeKeyer.focusExit}
+            className="flex items-center justify-center w-11 h-11 rounded-full text-slate-300 hover:text-white hover:bg-slate-800 active:bg-slate-700 transition"
+          >
+            <X size={24} />
+          </button>
+        </div>
+
+        {/* モールスツリー */}
+        <div className="flex-1 min-h-0 flex items-center justify-center px-3">
+          <MorseTreeBoard
+            code={treeCode}
+            committed={treeCommitted}
+            isActive={isPressing}
+            className="h-full justify-center"
+            svgClassName="w-full max-w-[420px] h-auto max-h-[calc(100%-1.75rem)] min-h-0"
+          />
+        </div>
+
+        {/* 解読テキスト1行 */}
+        <div className="px-3 pb-2 shrink-0">
+          {renderOutputLine()}
+        </div>
+
+        {/* 電鍵 */}
+        <div className="h-[28vh] min-h-32 max-h-56 px-3 pb-3 shrink-0">
+          {renderKeyingController(true)}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-3xl mx-auto space-y-3 sm:space-y-4">
       {/* Header */}
@@ -205,24 +366,7 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
             </button>
           </div>
 
-          <div className="flex items-center gap-1 bg-slate-950/60 p-0.5 rounded-xl border border-slate-800">
-            <button
-              onClick={() => setKeyingMode('paddle')}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
-                keyingMode === 'paddle' ? 'bg-blue-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              {t.freeKeyer.modePaddle}
-            </button>
-            <button
-              onClick={() => setKeyingMode('straight')}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
-                keyingMode === 'straight' ? 'bg-blue-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              {t.freeKeyer.modeStraight}
-            </button>
-          </div>
+          {renderKeyingModeSelector()}
 
           {!isWabun && (
             <button
@@ -239,6 +383,15 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
               <span>{t.freeKeyer.treeToggle}</span>
             </button>
           )}
+
+          <button
+            onClick={enterFocusMode}
+            title={t.freeKeyer.focusEnter}
+            className="sm:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold border bg-cyan-500/15 border-cyan-500/60 text-cyan-300 transition"
+          >
+            <Maximize2 size={14} />
+            <span>{t.freeKeyer.focusMode}</span>
+          </button>
         </div>
       </div>
 
@@ -280,17 +433,7 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
           </div>
 
           {/* Text Output Box with fixed height */}
-          <div className="h-12 flex items-center bg-slate-900/60 rounded-xl px-3.5 border border-slate-800/80 overflow-x-auto no-scrollbar">
-            <div className="text-lg sm:text-xl font-black text-white tracking-wider flex items-center gap-1 whitespace-nowrap">
-              <span>{decodedMessage}</span>
-              {currentMorseBuffer && (
-                <span className="text-amber-400 font-mono text-base sm:text-lg bg-amber-950/60 px-2 py-0.5 rounded border border-amber-800/50 animate-pulse">
-                  {morseToDotsAndDashes(currentMorseBuffer)}
-                </span>
-              )}
-              <span className="inline-block w-2 h-4 bg-cyan-400 animate-pulse ml-0.5 shrink-0" />
-            </div>
-          </div>
+          {renderOutputLine()}
 
           {/* History of Morse Tokens (Fixed height slot) */}
           <div className="h-5 flex items-center gap-1 overflow-x-auto no-scrollbar">
@@ -310,55 +453,13 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
         </div>
 
         {/* Keying Controller */}
-        {keyingMode === 'paddle' ? (
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              onPointerDown={() => handlePaddleInput('.')}
-              className="h-20 sm:h-24 bg-gradient-to-b from-slate-800 to-slate-900 active:from-cyan-600 active:to-cyan-700 active:scale-95 text-slate-100 rounded-2xl border-2 border-slate-700 active:border-cyan-400 shadow-xl flex flex-col items-center justify-center gap-0.5 transition-all select-none touch-manipulation cursor-pointer"
-            >
-              <div className="w-5 h-5 rounded-full bg-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.9)]" />
-              <span className="text-lg font-black">{t.freeKeyer.dotButton}</span>
-              <span className="text-[10px] font-mono text-slate-400">{t.freeKeyer.keyJ}</span>
-            </button>
-
-            <button
-              type="button"
-              onPointerDown={() => handlePaddleInput('-')}
-              className="h-20 sm:h-24 bg-gradient-to-b from-slate-800 to-slate-900 active:from-blue-600 active:to-blue-700 active:scale-95 text-slate-100 rounded-2xl border-2 border-slate-700 active:border-blue-400 shadow-xl flex flex-col items-center justify-center gap-0.5 transition-all select-none touch-manipulation cursor-pointer"
-            >
-              <div className="w-12 h-3.5 rounded-full bg-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.9)]" />
-              <span className="text-lg font-black">{t.freeKeyer.dashButton}</span>
-              <span className="text-[10px] font-mono text-slate-400">{t.freeKeyer.keyK}</span>
-            </button>
-          </div>
-        ) : (
-          <div>
-            <button
-              type="button"
-              onPointerDown={handleStraightDown}
-              onPointerUp={handleStraightUp}
-              onPointerLeave={handleStraightUp}
-              className={`w-full h-24 sm:h-28 rounded-2xl border-2 shadow-xl flex flex-col items-center justify-center gap-1 transition-all select-none touch-manipulation cursor-pointer ${
-                isPressing
-                  ? 'bg-amber-500 border-amber-300 scale-95 shadow-[0_0_25px_rgba(245,158,11,0.9)]'
-                  : 'bg-gradient-to-b from-slate-800 to-slate-900 border-slate-700 hover:border-slate-600'
-              }`}
-            >
-              <div className={`w-7 h-7 rounded-full border-2 ${isPressing ? 'bg-white border-amber-200' : 'bg-slate-700 border-slate-600'}`} />
-              <span className="text-lg font-black text-white">
-                {isPressing ? t.freeKeyer.transmitting : t.freeKeyer.straightIdle}
-              </span>
-              <span className="text-[10px] text-slate-400 font-mono">{t.freeKeyer.pcKeyHelp}</span>
-            </button>
-          </div>
-        )}
+        {renderKeyingController(false)}
 
         {/* Morse Tree Board (Alphabet only, toggleable) */}
         {!isWabun && showTree && (
           <MorseTreeBoard
-            code={currentMorseBuffer || lastCommittedCode}
-            committed={!currentMorseBuffer && Boolean(lastCommittedCode)}
+            code={treeCode}
+            committed={treeCommitted}
             isActive={isPressing}
             className="pt-1"
           />

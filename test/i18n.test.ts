@@ -91,6 +91,11 @@ describe('i18n Language Detection & Translation Tests', () => {
 
     expect(translations.ja.nav.freeKeyer).toBe('フリー電信機');
     expect(translations.en.nav.freeKeyer).toBe('Free Keyer');
+
+    expect(translations.ja.freeKeyer.focusMode).toBe('集中モード');
+    expect(translations.en.freeKeyer.focusMode).toBe('Focus Mode');
+    expect(translations.ja.freeKeyer.focusExit).toBeTruthy();
+    expect(translations.en.freeKeyer.focusExit).toBeTruthy();
   });
 
   it('should have English names / mnemonics for Morse items', () => {

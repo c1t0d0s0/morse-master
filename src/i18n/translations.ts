@@ -167,6 +167,9 @@ export const translations = {
       treeToggle: 'ツリー盤',
       showTree: 'モールス・ツリー盤を表示',
       hideTree: 'モールス・ツリー盤を隠す',
+      focusMode: '集中モード',
+      focusEnter: '集中モードで練習',
+      focusExit: '集中モードを終了',
     },
 
     // Morse Tree Board
@@ -370,6 +373,9 @@ export const translations = {
       treeToggle: 'Tree',
       showTree: 'Show Morse tree board',
       hideTree: 'Hide Morse tree board',
+      focusMode: 'Focus Mode',
+      focusEnter: 'Practice in focus mode',
+      focusExit: 'Exit focus mode',
     },
 
     // Morse Tree Board
