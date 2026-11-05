@@ -39,3 +39,27 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #475569;
 }
+
+/*
+ * 電鍵・パドル操作面: スマホで長押ししても
+ * コンテキストメニュー / 拡大鏡 / テキスト選択が出ないようにする
+ */
+.no-select-callout,
+.no-select-callout * {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.keyer-surface,
+.keyer-surface * {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* スクロール・ダブルタップ拡大などのジェスチャーも無効化 */
+.keyer-surface button {
+  touch-action: none;
+}

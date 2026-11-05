@@ -189,6 +189,9 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // 長押しでコンテキストメニューを出さない
+  const preventContextMenu = (e: React.SyntheticEvent) => e.preventDefault();
+
   // 解読テキスト1行（通常画面・集中モード共用）
   const renderOutputLine = () => (
     <div className="h-12 flex items-center bg-slate-900/60 rounded-xl px-3.5 border border-slate-800/80 overflow-x-auto no-scrollbar">
@@ -207,7 +210,7 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
   // 電鍵（tall=true で親の高さいっぱいに広げる）
   const renderKeyingController = (tall: boolean) => (
     keyingMode === 'paddle' ? (
-      <div className={`grid grid-cols-2 gap-3 ${tall ? 'h-full' : ''}`}>
+      <div className={`keyer-surface grid grid-cols-2 gap-3 ${tall ? 'h-full' : ''}`} onContextMenu={preventContextMenu}>
         <button
           type="button"
           onPointerDown={() => handlePaddleInput('.')}
@@ -229,12 +232,13 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
         </button>
       </div>
     ) : (
-      <div className={tall ? 'h-full' : undefined}>
+      <div className={`keyer-surface ${tall ? 'h-full' : ''}`} onContextMenu={preventContextMenu}>
         <button
           type="button"
           onPointerDown={handleStraightDown}
           onPointerUp={handleStraightUp}
           onPointerLeave={handleStraightUp}
+          onPointerCancel={handleStraightUp}
           className={`w-full ${tall ? 'h-full' : 'h-24 sm:h-28'} rounded-2xl border-2 shadow-xl flex flex-col items-center justify-center gap-1 transition-all select-none touch-manipulation cursor-pointer ${
             isPressing
               ? 'bg-amber-500 border-amber-300 scale-95 shadow-[0_0_25px_rgba(245,158,11,0.9)]'
@@ -278,10 +282,11 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
   if (focusMode) {
     return (
       <div
-        className="fixed inset-0 z-50 bg-slate-950 flex flex-col h-[100dvh] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]"
+        className="no-select-callout fixed inset-0 z-50 bg-slate-950 flex flex-col h-[100dvh] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]"
         role="dialog"
         aria-modal="true"
         aria-label={t.freeKeyer.focusMode}
+        onContextMenu={preventContextMenu}
       >
         {/* 上部バー */}
         <div className="flex items-center justify-between gap-2 pl-3 pr-1 py-1 shrink-0">
@@ -396,7 +401,7 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
       </div>
 
       {/* Main Keyer Board */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-4 sm:p-5 backdrop-blur shadow-2xl space-y-3">
+      <div className="no-select-callout bg-slate-900/90 border border-slate-800 rounded-3xl p-4 sm:p-5 backdrop-blur shadow-2xl space-y-3">
         {/* Signal & Visualizer */}
         <MorseVisualizer
           isActive={isPressing}

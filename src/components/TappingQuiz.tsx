@@ -388,10 +388,10 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
 
             {/* Tapping Keypad (Paddle vs Straight Key) */}
             {!isAnswered ? (
-              <div className="space-y-1.5 sm:space-y-2">
+              <div className="no-select-callout space-y-1.5 sm:space-y-2">
                 {keyingMode === 'paddle' ? (
                   /* Paddle Dual Keys */
-                  <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
+                  <div className="keyer-surface grid grid-cols-2 gap-2 sm:gap-2.5" onContextMenu={(e) => e.preventDefault()}>
                     {/* Dot (短点) Button */}
                     <button
                       type="button"
@@ -416,12 +416,13 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
                   </div>
                 ) : (
                   /* Straight Key Button */
-                  <div>
+                  <div className="keyer-surface" onContextMenu={(e) => e.preventDefault()}>
                     <button
                       type="button"
                       onPointerDown={handleStraightKeyDown}
                       onPointerUp={handleStraightKeyUp}
                       onPointerLeave={handleStraightKeyUp}
+                      onPointerCancel={handleStraightKeyUp}
                       className={`w-full h-20 sm:h-28 rounded-xl sm:rounded-2xl border-2 shadow-lg sm:shadow-xl flex flex-col items-center justify-center gap-0.5 sm:gap-1 transition-all select-none touch-manipulation cursor-pointer ${
                         activeSignal
                           ? 'bg-amber-500 border-amber-300 scale-95 shadow-[0_0_25px_rgba(245,158,11,0.8)]'
