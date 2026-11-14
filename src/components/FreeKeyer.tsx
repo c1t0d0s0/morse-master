@@ -7,6 +7,7 @@ import { MorseVisualizer } from './MorseVisualizer';
 import { MorseTreeBoard } from './MorseTreeBoard';
 import { useTranslation } from '../i18n/LanguageContext';
 import { preventTouchSelection } from '../utils/preventTouchSelection';
+import { usePaddleKeyer } from '../hooks/usePaddleKeyer';
 
 interface FreeKeyerProps {
   settings: AudioEngineSettings;
@@ -72,7 +73,8 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
   const pauseTimerRef = useRef<number | null>(null);
 
   // 最後の入力からの無音時間で文字確定タイマーを動かす
-  const resetPauseTimer = (currentBuffer: string) => {
+  // lastPaddleSymbol: パドル入力は送出開始時に呼ばれるので、符号長ぶん待ち時間を延ばす
+  const resetPauseTimer = (currentBuffer: string, lastPaddleSymbol?: '.' | '-') => {
     if (pauseTimerRef.current) {
       clearTimeout(pauseTimerRef.current);
     }
@@ -87,7 +89,7 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
         setLastCommittedCode(currentBuffer);
         setCurrentMorseBuffer('');
       }
-    }, dotDuration * 3.5);
+    }, dotDuration * (lastPaddleSymbol === '-' ? 5.5 : 3.5));
   };
 
   // パドル入力
@@ -104,10 +106,18 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
 
     setCurrentMorseBuffer(prev => {
       const next = prev + symbol;
-      resetPauseTimer(next);
+      resetPauseTimer(next, symbol);
       return next;
     });
   };
+
+  // パドルの連続打鍵（押し続けると同じ符号を繰り返す）
+  const paddle = usePaddleKeyer({ onSymbol: handlePaddleInput, wpm: settings.wpm });
+
+  // モード切替時は押下状態をリセット
+  useEffect(() => {
+    paddle.releaseAll();
+  }, [keyingMode, paddle.releaseAll]);
 
   // ストレートキー押下
   const handleStraightDown = () => {
@@ -146,10 +156,11 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
       if (keyingMode === 'paddle') {
         if (e.key === 'j' || e.key === 'J') {
           e.preventDefault();
-          handlePaddleInput('.');
+          // OS のキーリピートは無視（連続打鍵は usePaddleKeyer がモールスのタイミングで行う）
+          if (!e.repeat) paddle.press('.');
         } else if (e.key === 'k' || e.key === 'K') {
           e.preventDefault();
-          handlePaddleInput('-');
+          if (!e.repeat) paddle.press('-');
         } else if (e.key === ' ') {
           e.preventDefault();
           setDecodedMessage(prev => prev + ' ');
@@ -163,6 +174,11 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
+      if (keyingMode === 'paddle') {
+        if (e.key === 'j' || e.key === 'J') paddle.release('.');
+        else if (e.key === 'k' || e.key === 'K') paddle.release('-');
+        return;
+      }
       if (keyingMode === 'straight' && e.code === 'Space') {
         e.preventDefault();
         handleStraightUp();
@@ -211,11 +227,15 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
   // 電鍵（tall=true で親の高さいっぱいに広げる）
   const renderKeyingController = (tall: boolean) => (
     keyingMode === 'paddle' ? (
-      <div className={`keyer-surface grid grid-cols-2 gap-3 ${tall ? 'h-full' : ''}`} onContextMenu={preventContextMenu}>
+      <div ref={preventTouchSelection} className={`keyer-surface grid grid-cols-2 gap-3 ${tall ? 'h-full' : ''}`} onContextMenu={preventContextMenu}>
         <button
           type="button"
-          onPointerDown={() => handlePaddleInput('.')}
-          className={`${tall ? 'h-full' : 'h-20 sm:h-24'} bg-gradient-to-b from-slate-800 to-slate-900 active:from-cyan-600 active:to-cyan-700 active:scale-95 text-slate-100 rounded-2xl border-2 border-slate-700 active:border-cyan-400 shadow-xl flex flex-col items-center justify-center gap-0.5 transition-all select-none touch-manipulation cursor-pointer`}
+          {...paddle.getPointerHandlers('.')}
+          className={`${tall ? 'h-full' : 'h-20 sm:h-24'} text-slate-100 rounded-2xl border-2 shadow-xl flex flex-col items-center justify-center gap-0.5 transition-all select-none touch-manipulation cursor-pointer ${
+            paddle.heldSymbol === '.'
+              ? 'bg-gradient-to-b from-cyan-600 to-cyan-700 border-cyan-400 scale-95'
+              : 'bg-gradient-to-b from-slate-800 to-slate-900 border-slate-700'
+          }`}
         >
           <div className="w-5 h-5 rounded-full bg-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.9)]" />
           <span className="text-lg font-black">{t.freeKeyer.dotButton}</span>
@@ -224,8 +244,12 @@ export const FreeKeyer: React.FC<FreeKeyerProps> = ({ settings }) => {
 
         <button
           type="button"
-          onPointerDown={() => handlePaddleInput('-')}
-          className={`${tall ? 'h-full' : 'h-20 sm:h-24'} bg-gradient-to-b from-slate-800 to-slate-900 active:from-blue-600 active:to-blue-700 active:scale-95 text-slate-100 rounded-2xl border-2 border-slate-700 active:border-blue-400 shadow-xl flex flex-col items-center justify-center gap-0.5 transition-all select-none touch-manipulation cursor-pointer`}
+          {...paddle.getPointerHandlers('-')}
+          className={`${tall ? 'h-full' : 'h-20 sm:h-24'} text-slate-100 rounded-2xl border-2 shadow-xl flex flex-col items-center justify-center gap-0.5 transition-all select-none touch-manipulation cursor-pointer ${
+            paddle.heldSymbol === '-'
+              ? 'bg-gradient-to-b from-blue-600 to-blue-700 border-blue-400 scale-95'
+              : 'bg-gradient-to-b from-slate-800 to-slate-900 border-slate-700'
+          }`}
         >
           <div className="w-12 h-3.5 rounded-full bg-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.9)]" />
           <span className="text-lg font-black">{t.freeKeyer.dashButton}</span>

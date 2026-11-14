@@ -8,6 +8,7 @@ import { morseAudio } from '../audio/morseAudioEngine';
 import { MorseVisualizer } from './MorseVisualizer';
 import { useTranslation } from '../i18n/LanguageContext';
 import { preventTouchSelection } from '../utils/preventTouchSelection';
+import { usePaddleKeyer } from '../hooks/usePaddleKeyer';
 
 interface TappingQuizProps {
   settings: AudioEngineSettings;
@@ -70,9 +71,17 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
       setCurrentSymbol(null);
     }, sym === '.' ? morseAudio.getDotDurationMs() : morseAudio.getDotDurationMs() * 3);
 
-    const nextBuffer = currentCharBuffer + sym;
-    setCurrentCharBuffer(nextBuffer);
+    // 連続打鍵ではタイマーから呼ばれるため、最新の値に追記する
+    setCurrentCharBuffer(prev => prev + sym);
   };
+
+  // パドルの連続打鍵（押し続けると同じ符号を繰り返す）
+  const paddle = usePaddleKeyer({ onSymbol: handleInputSymbol, wpm: settings.wpm });
+
+  // モード切替・回答後は押下状態をリセット
+  useEffect(() => {
+    paddle.releaseAll();
+  }, [keyingMode, isAnswered, paddle.releaseAll]);
 
   // 現在の文字バッファを確定
   const commitCurrentChar = () => {
@@ -132,10 +141,11 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
       if (keyingMode === 'paddle') {
         if (e.key === 'j' || e.key === 'J' || e.key === 'f' || e.key === 'F') {
           e.preventDefault();
-          handleInputSymbol('.');
+          // OS のキーリピートは無視（連続打鍵は usePaddleKeyer がモールスのタイミングで行う）
+          if (!e.repeat) paddle.press('.');
         } else if (e.key === 'k' || e.key === 'K' || e.key === 'd' || e.key === 'D') {
           e.preventDefault();
-          handleInputSymbol('-');
+          if (!e.repeat) paddle.press('-');
         } else if (e.key === ' ' || e.key === 'Enter') {
           e.preventDefault();
           if (currentCharBuffer) {
@@ -159,6 +169,11 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
+      if (keyingMode === 'paddle') {
+        if (['j', 'J', 'f', 'F'].includes(e.key)) paddle.release('.');
+        else if (['k', 'K', 'd', 'D'].includes(e.key)) paddle.release('-');
+        return;
+      }
       if (keyingMode === 'straight' && e.code === 'Space') {
         e.preventDefault();
         handleStraightKeyUp();
@@ -392,12 +407,16 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
               <div className="no-select-callout space-y-1.5 sm:space-y-2">
                 {keyingMode === 'paddle' ? (
                   /* Paddle Dual Keys */
-                  <div className="keyer-surface grid grid-cols-2 gap-2 sm:gap-2.5" onContextMenu={(e) => e.preventDefault()}>
+                  <div ref={preventTouchSelection} className="keyer-surface grid grid-cols-2 gap-2 sm:gap-2.5" onContextMenu={(e) => e.preventDefault()}>
                     {/* Dot (短点) Button */}
                     <button
                       type="button"
-                      onPointerDown={() => handleInputSymbol('.')}
-                      className="h-16 sm:h-22 bg-gradient-to-b from-slate-800 to-slate-900 active:from-cyan-600 active:to-cyan-700 active:scale-95 text-slate-100 hover:text-white rounded-xl sm:rounded-2xl border-2 border-slate-700 active:border-cyan-400 shadow-md sm:shadow-lg flex flex-col items-center justify-center gap-0.5 transition-all select-none touch-manipulation cursor-pointer"
+                      {...paddle.getPointerHandlers('.')}
+                      className={`h-16 sm:h-22 text-slate-100 hover:text-white rounded-xl sm:rounded-2xl border-2 shadow-md sm:shadow-lg flex flex-col items-center justify-center gap-0.5 transition-all select-none touch-manipulation cursor-pointer ${
+                        paddle.heldSymbol === '.'
+                          ? 'bg-gradient-to-b from-cyan-600 to-cyan-700 border-cyan-400 scale-95'
+                          : 'bg-gradient-to-b from-slate-800 to-slate-900 border-slate-700'
+                      }`}
                     >
                       <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
                       <span className="text-sm sm:text-lg font-black">{t.tapping.dotButton}</span>
@@ -407,8 +426,12 @@ export const TappingQuiz: React.FC<TappingQuizProps> = ({ settings }) => {
                     {/* Dash (長点) Button */}
                     <button
                       type="button"
-                      onPointerDown={() => handleInputSymbol('-')}
-                      className="h-16 sm:h-22 bg-gradient-to-b from-slate-800 to-slate-900 active:from-blue-600 active:to-blue-700 active:scale-95 text-slate-100 hover:text-white rounded-xl sm:rounded-2xl border-2 border-slate-700 active:border-blue-400 shadow-md sm:shadow-lg flex flex-col items-center justify-center gap-0.5 transition-all select-none touch-manipulation cursor-pointer"
+                      {...paddle.getPointerHandlers('-')}
+                      className={`h-16 sm:h-22 text-slate-100 hover:text-white rounded-xl sm:rounded-2xl border-2 shadow-md sm:shadow-lg flex flex-col items-center justify-center gap-0.5 transition-all select-none touch-manipulation cursor-pointer ${
+                        paddle.heldSymbol === '-'
+                          ? 'bg-gradient-to-b from-blue-600 to-blue-700 border-blue-400 scale-95'
+                          : 'bg-gradient-to-b from-slate-800 to-slate-900 border-slate-700'
+                      }`}
                     >
                       <div className="w-8 h-2.5 sm:w-10 sm:h-3 rounded-full bg-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.8)]" />
                       <span className="text-sm sm:text-lg font-black">{t.tapping.dashButton}</span>
