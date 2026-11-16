@@ -30,7 +30,7 @@ const UNIT_Y = 45;
 const OFFSET_X = 30;
 const OFFSET_Y = 92;
 const VIEW_W = 400;
-const VIEW_H = 400;
+const VIEW_H = 420;
 
 const px = (x: number) => OFFSET_X + x * UNIT_X;
 const py = (y: number) => OFFSET_Y + y * UNIT_Y;
