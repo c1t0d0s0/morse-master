@@ -5,6 +5,7 @@ import { TappingQuiz } from './components/TappingQuiz';
 import { ReferenceChart } from './components/ReferenceChart';
 import { Translator } from './components/Translator';
 import { FreeKeyer } from './components/FreeKeyer';
+import { MorseGame } from './components/MorseGame';
 import { SettingsModal } from './components/SettingsModal';
 import { QuizMode, AudioEngineSettings } from './types';
 import { morseAudio } from './audio/morseAudioEngine';
@@ -60,6 +61,10 @@ const AppContent: React.FC = () => {
 
         {currentMode === 'free-keyer' && (
           <FreeKeyer settings={settings} />
+        )}
+
+        {currentMode === 'game' && (
+          <MorseGame settings={settings} />
         )}
       </main>
 

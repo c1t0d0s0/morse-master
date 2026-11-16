@@ -1,5 +1,5 @@
 import React from 'react';
-import { Headphones, Radio, BookOpen, Repeat, Settings, Zap, Volume2, Eye, Globe } from 'lucide-react';
+import { Headphones, Radio, BookOpen, Repeat, Settings, Zap, Volume2, Eye, Globe, Gamepad2 } from 'lucide-react';
 import { QuizMode, AudioEngineSettings } from '../types';
 import { useTranslation } from '../i18n/LanguageContext';
 
@@ -26,6 +26,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { mode: 'reference', label: t.nav.reference, icon: <BookOpen size={18} /> },
     { mode: 'translator', label: t.nav.translator, icon: <Repeat size={18} /> },
     { mode: 'free-keyer', label: t.nav.freeKeyer, icon: <Radio size={18} /> },
+    { mode: 'game', label: t.nav.game, icon: <Gamepad2 size={18} /> },
   ];
 
   const toggleLanguage = () => {

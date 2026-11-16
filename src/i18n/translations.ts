@@ -14,6 +14,7 @@ export const translations = {
       reference: '符号一覧表',
       translator: '翻訳＆再生',
       freeKeyer: 'フリー電信機',
+      game: 'ゲーム',
     },
     header: {
       mute: '消音',
@@ -182,6 +183,32 @@ export const translations = {
       tapHint: '文字をタップすると再生します',
     },
 
+    // Game (Morse Cannon)
+    game: {
+      title: 'モールス・キャノン',
+      subtitle: '落ちてくる文字のモールス符号を打ち込んで、大砲で撃ち落とそう！',
+      modeBeginner: '初心者',
+      modeAdvanced: '上級者',
+      score: 'スコア',
+      highScore: 'ハイスコア',
+      lives: 'ライフ',
+      level: 'スピード',
+      time: '時間',
+      start: 'スタート',
+      retry: 'もう一度',
+      gameOver: 'ゲームオーバー',
+      newRecord: 'ハイスコア更新！',
+      finalScore: '今回のスコア',
+      howTo: '正しい符号を打つと砲弾が発射されます。3枚落とすとゲームオーバー。1分ごとに少しずつ速くなります。',
+      beginnerDesc: '文字の下に符号が表示されます',
+      advancedDesc: '符号は表示されません',
+      startHintPaddle: 'Enter / Space でスタート ・ J = 短点 / K = 長点',
+      startHintStraight: 'Enter / Space でスタート ・ Space = 電鍵',
+      speedUp: 'SPEED UP!',
+      miss: '×',
+      lockedDuringPlay: 'プレイ中は変更できません',
+    },
+
     // Settings Modal
     settingsModal: {
       title: '設定 (Settings)',
@@ -220,6 +247,7 @@ export const translations = {
       reference: 'Reference Chart',
       translator: 'Translator',
       freeKeyer: 'Free Keyer',
+      game: 'Game',
     },
     header: {
       mute: 'Mute',
@@ -386,6 +414,32 @@ export const translations = {
       noMatch: 'No matching letter',
       idleHint: 'Key in to light up the current letter',
       tapHint: 'Tap a letter to play it',
+    },
+
+    // Game (Morse Cannon)
+    game: {
+      title: 'Morse Cannon',
+      subtitle: 'Key in the Morse code of each falling character to blast it with your cannon!',
+      modeBeginner: 'Beginner',
+      modeAdvanced: 'Advanced',
+      score: 'Score',
+      highScore: 'High Score',
+      lives: 'Lives',
+      level: 'Speed',
+      time: 'Time',
+      start: 'Start',
+      retry: 'Play Again',
+      gameOver: 'Game Over',
+      newRecord: 'New High Score!',
+      finalScore: 'Your Score',
+      howTo: 'Key the correct code to fire. Miss 3 cards and the game is over. It gets a little faster every minute.',
+      beginnerDesc: 'The code is shown under each character',
+      advancedDesc: 'No code hints',
+      startHintPaddle: 'Enter / Space to start ・ J = dit / K = dah',
+      startHintStraight: 'Enter / Space to start ・ Space = straight key',
+      speedUp: 'SPEED UP!',
+      miss: '×',
+      lockedDuringPlay: 'Cannot change during play',
     },
 
     // Settings Modal

@@ -1,6 +1,6 @@
 export type MorseCategory = 'alphabet' | 'number' | 'wabun' | 'symbol';
 export type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced';
-export type QuizMode = 'listening' | 'tapping' | 'reference' | 'translator' | 'free-keyer';
+export type QuizMode = 'listening' | 'tapping' | 'reference' | 'translator' | 'free-keyer' | 'game';
 export type TargetCharset = 'all' | 'alphabet' | 'number' | 'wabun';
 export type KeyingMode = 'paddle' | 'straight';
 
